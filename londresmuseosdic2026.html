@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Londres 14–18 diciembre 2026 · museos, mapa e itinerarios</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+:root{
+  --bg:#12161f; --bg2:#1a202c; --card:#1e2531; --line:#2c3444;
+  --ink:#e8ecf3; --dim:#9aa6b8; --gold:#e8b44a; --gold2:#f6d48a;
+  --green:#57c4a0; --red:#e2725b; --blue:#6fa8dc; --violet:#a98bd6;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .4em}
+h2{font-size:1.9rem; letter-spacing:-.02em}
+h3{font-size:1.25rem}
+a{color:var(--gold2)}
+a:hover{color:#fff}
+.wrap{max-width:1180px; margin:0 auto; padding:0 20px}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative; padding:72px 0 60px; overflow:hidden;
+  background:
+    linear-gradient(180deg, rgba(18,22,31,.55) 0%, rgba(18,22,31,.92) 70%, var(--bg) 100%),
+    url('https://commons.wikimedia.org/wiki/Special:FilePath/Trafalgar%20square%20Christmas%20tree%20and%20fountain%202022.jpg?width=1600') center 40%/cover no-repeat;
+}
+.hero h1{font-size:clamp(2.1rem,5.5vw,3.4rem); letter-spacing:-.03em; margin-bottom:.2em}
+.hero .kicker{color:var(--gold); font-weight:600; letter-spacing:.14em; text-transform:uppercase; font-size:.78rem; margin-bottom:14px}
+.hero p{max-width:640px; color:#d5dce8; font-size:1.08rem}
+.badges{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px}
+.badge{
+  background:rgba(232,180,74,.13); border:1px solid rgba(232,180,74,.35);
+  color:var(--gold2); padding:6px 13px; border-radius:100px; font-size:.84rem; font-weight:500;
+}
+
+/* ---------- NAV ---------- */
+nav{
+  position:sticky; top:0; z-index:900; background:rgba(18,22,31,.93);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+}
+nav .wrap{display:flex; gap:4px; overflow-x:auto; padding-top:10px; padding-bottom:10px}
+nav a{
+  color:var(--dim); text-decoration:none; padding:7px 13px; border-radius:9px;
+  font-size:.9rem; white-space:nowrap; font-weight:500;
+}
+nav a:hover{background:var(--bg2); color:var(--ink)}
+
+section{padding:56px 0; border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.lead{color:var(--dim); max-width:760px; margin-bottom:28px}
+
+/* ---------- CAJA NOTAS ---------- */
+.notes{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:16px}
+.note{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px}
+.note h4{color:var(--gold); font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px}
+.note p{margin:0; font-size:.94rem; color:#c6cfdd}
+
+/* ---------- MAPA ---------- */
+#map{height:560px; border-radius:var(--radius); border:1px solid var(--line); z-index:1;
+  background:#e8e4dd; box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#map .leaflet-control-attribution{background:rgba(255,255,255,.85); font-size:10px}
+.filters{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px}
+.filters button{
+  background:var(--card); border:1px solid var(--line); color:var(--dim);
+  padding:8px 15px; border-radius:100px; cursor:pointer; font-size:.88rem; font-weight:500;
+  font-family:inherit; transition:.15s;
+}
+.filters button:hover{color:var(--ink); border-color:#3d4859}
+.filters button.on{background:var(--gold); border-color:var(--gold); color:#1a1206}
+.pin{
+  width:26px; height:26px; border-radius:50% 50% 50% 0; transform:rotate(-45deg);
+  border:2px solid rgba(255,255,255,.85); box-shadow:0 2px 6px rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center;
+}
+.pin span{transform:rotate(45deg); font-size:13px; line-height:1}
+.leaflet-popup-content-wrapper{background:#1e2531; color:var(--ink); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.45)}
+.leaflet-popup-tip{background:#1e2531}
+.leaflet-popup-content{margin:13px 15px; font-size:.9rem; line-height:1.5}
+.leaflet-popup-content b{color:var(--gold2); font-size:.98rem}
+.leaflet-popup-content a{color:var(--gold2)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--dim)}
+
+/* ---------- ACORDEÓN ---------- */
+.acc{border:1px solid var(--line); border-radius:var(--radius); margin-bottom:14px; background:var(--card); overflow:hidden}
+.acc summary{
+  list-style:none; cursor:pointer; padding:22px 24px; display:flex;
+  align-items:center; gap:16px; user-select:none;
+}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary:hover{background:#232b39}
+.acc .num{
+  flex:0 0 auto; width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
+  background:rgba(232,180,74,.14); color:var(--gold); font-weight:700; border:1px solid rgba(232,180,74,.3);
+}
+.acc .tt{flex:1}
+.acc .tt strong{display:block; font-size:1.16rem}
+.acc .tt em{font-style:normal; color:var(--dim); font-size:.9rem}
+.acc .chev{color:var(--dim); transition:transform .2s; font-size:1.3rem}
+.acc[open] .chev{transform:rotate(180deg)}
+.acc .body{padding:0 24px 24px; border-top:1px solid var(--line); padding-top:20px}
+.day{display:grid; grid-template-columns:98px 1fr; gap:18px; padding:18px 0; border-bottom:1px dashed #2b3343}
+.day:last-child{border-bottom:0}
+.day .dd{color:var(--gold); font-weight:700; font-size:.92rem}
+.day .dd small{display:block; color:var(--dim); font-weight:400; font-size:.8rem}
+.slot{margin-bottom:11px}
+.slot:last-child{margin-bottom:0}
+.slot > b{color:var(--gold2); font-weight:600; font-size:.83rem; letter-spacing:.07em; text-transform:uppercase; display:block; margin-bottom:2px}
+.slot p b{color:var(--gold2); font-weight:600}
+.slot p{margin:0; color:#cdd6e3; font-size:.95rem}
+.cost{margin-top:18px; padding:14px 18px; background:rgba(87,196,160,.09);
+  border:1px solid rgba(87,196,160,.28); border-radius:10px; font-size:.92rem; color:#bfe6d8}
+.cost b{color:var(--green)}
+@media(max-width:640px){ .day{grid-template-columns:1fr; gap:6px} }
+
+/* ---------- FICHAS ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:20px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  overflow:hidden; display:flex; flex-direction:column;
+}
+.card .ph{position:relative; aspect-ratio:16/10; background:#0e1219; overflow:hidden}
+.card .ph img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s}
+.card:hover .ph img{transform:scale(1.04)}
+.card .tag{
+  position:absolute; left:12px; top:12px; background:rgba(10,13,19,.82); backdrop-filter:blur(6px);
+  color:var(--gold2); font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  padding:5px 10px; border-radius:100px; border:1px solid rgba(255,255,255,.13);
+}
+.card .price{
+  position:absolute; right:12px; top:12px; background:rgba(10,13,19,.82); backdrop-filter:blur(6px);
+  font-size:.76rem; font-weight:700; padding:5px 10px; border-radius:100px;
+  border:1px solid rgba(255,255,255,.13);
+}
+.price.free{color:var(--green)} .price.paid{color:var(--gold2)}
+.card .in{padding:18px 20px 20px; display:flex; flex-direction:column; gap:11px; flex:1}
+.card h3{margin:0; font-size:1.17rem; letter-spacing:-.01em}
+.card .hood{color:var(--dim); font-size:.85rem; margin:-6px 0 0}
+.row{display:flex; gap:9px; font-size:.9rem; color:#c6cfdd; line-height:1.5}
+.row .ic{flex:0 0 20px; text-align:center; opacity:.85}
+.row b{color:var(--gold2); font-weight:600}
+.star{background:rgba(232,180,74,.08); border-left:2px solid var(--gold); padding:9px 12px;
+  border-radius:0 8px 8px 0; font-size:.9rem; color:#dbe3ef}
+.star b{color:var(--gold)}
+.stud{background:rgba(87,196,160,.09); border-left:2px solid var(--green); padding:9px 12px;
+  border-radius:0 8px 8px 0; font-size:.9rem; color:#c5e5da}
+.stud b{color:var(--green)}
+.card .links{margin-top:auto; padding-top:12px; border-top:1px solid var(--line); display:flex; gap:10px; flex-wrap:wrap}
+.btn{
+  display:inline-flex; align-items:center; gap:6px; text-decoration:none; font-size:.86rem; font-weight:600;
+  padding:8px 14px; border-radius:9px; border:1px solid var(--line); color:var(--ink); background:#252d3b;
+}
+.btn:hover{background:#2f394a; color:#fff}
+.btn.p{background:var(--gold); color:#1a1206; border-color:var(--gold)}
+.btn.p:hover{background:var(--gold2); color:#1a1206}
+
+/* ---------- EVENTOS ---------- */
+.ev{display:flex; gap:18px; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); padding:20px; margin-bottom:14px}
+.ev .when{
+  flex:0 0 96px; text-align:center; border-right:1px solid var(--line); padding-right:16px;
+}
+.ev .when .d{font-size:1.55rem; font-weight:700; color:var(--gold); line-height:1}
+.ev .when .m{font-size:.76rem; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-top:4px}
+.ev .body{flex:1}
+.ev h3{font-size:1.1rem; margin-bottom:5px}
+.ev p{margin:0 0 9px; color:#c6cfdd; font-size:.94rem}
+.ev .meta{display:flex; flex-wrap:wrap; gap:8px; font-size:.83rem}
+.chip{background:#252d3b; border:1px solid var(--line); padding:4px 11px; border-radius:100px; color:var(--dim)}
+.chip.money{color:var(--gold2); border-color:rgba(232,180,74,.3)}
+.chip.free{color:var(--green); border-color:rgba(87,196,160,.3)}
+@media(max-width:560px){ .ev{flex-direction:column; gap:12px} .ev .when{border-right:0; border-bottom:1px solid var(--line); padding:0 0 12px; text-align:left; display:flex; gap:8px; align-items:baseline} .ev .when .m{margin:0} }
+
+/* ---------- TABLA RESUMEN ---------- */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius)}
+table{border-collapse:collapse; width:100%; min-width:860px; font-size:.9rem}
+th,td{padding:12px 15px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+th{background:#222a37; color:var(--gold); font-size:.76rem; letter-spacing:.09em; text-transform:uppercase;
+   position:sticky; top:0; font-weight:600}
+tbody tr:hover{background:#222a37}
+td.n{font-weight:600; color:var(--ink)}
+td a{text-decoration:none}
+td a:hover{text-decoration:underline}
+.yes{color:var(--green); font-weight:600}
+.no{color:var(--dim)}
+
+footer{padding:44px 0 60px; color:var(--dim); font-size:.88rem; border-top:1px solid var(--line)}
+footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">14 – 18 de diciembre de 2026 · antes de Stonehenge</div>
+    <h1>Cinco días de museos en Londres</h1>
+    <p>Un plan para un grupo de universitarios con presupuesto contado: casi todos los museos grandes de Londres
+       son gratis, así que el dinero se va en comida, transporte y dos o tres caprichos. Aquí está el mapa con las
+       ubicaciones reales, tres formas distintas de repartir los cinco días, y lo que de verdad está pasando en la
+       ciudad esa semana.</p>
+    <div class="badges">
+      <span class="badge">21 museos gratis</span>
+      <span class="badge">Lunes a viernes</span>
+      <span class="badge">Mapa interactivo</span>
+      <span class="badge">Precios de estudiante verificados</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#antes">Antes de salir</a>
+  <a href="#mapa">Mapa</a>
+  <a href="#itinerarios">3 itinerarios</a>
+  <a href="#eventos">Eventos</a>
+  <a href="#museos">Museos</a>
+  <a href="#monumentos">Monumentos</a>
+  <a href="#tiendas">Tiendas</a>
+  <a href="#comida">Comer</a>
+  <a href="#resumen">Resumen</a>
+</div></nav>
+
+<section id="antes"><div class="wrap">
+  <h2>Cuatro cosas antes de salir</h2>
+  <p class="lead">Nada de teoría: esto es lo que de verdad cambia el presupuesto y evita perder medio día.</p>
+  <div class="notes">
+    <div class="note">
+      <h4>Transporte</h4>
+      <p>No compres Oyster. Pasa la tarjeta bancaria o el móvil (contactless) en cada torniquete y el sistema te
+         pone el tope diario solo: alrededor de <b>£8,90</b> al día dentro de zonas 1–2. Cada uno con su propia
+         tarjeta, nunca dos personas con la misma.</p>
+    </div>
+    <div class="note">
+      <h4>Lo que cuesta cero</h4>
+      <p>British Museum, National Gallery, Tate Modern, Tate Britain, V&amp;A, Natural History, Science Museum,
+         National Portrait Gallery e Imperial War Museum: colección permanente gratis, siempre. Solo se paga
+         por las exposiciones temporales.</p>
+    </div>
+    <div class="note">
+      <h4>El carnet de estudiante</h4>
+      <p>Lleva el carnet físico de la universidad (o ISIC): sin él no aplican los descuentos. Tres que valen
+         muchísimo: <b>Courtauld Gallery gratis</b> para estudiantes, <b>Tate Collective</b> y <b>CLUB NPG</b>
+         (los dos gratis, para 16–25 años), que dejan las exposiciones de Tate y de la National Portrait
+         Gallery en <b>£5</b> cada una.</p>
+    </div>
+    <div class="note">
+      <h4>Diciembre = oscuridad</h4>
+      <p>A las 15:50 ya se puso el sol. Los museos se aprovechan de día y las luces, mercados y pista de hielo
+         de noche. Los viernes varios museos abren tarde: V&amp;A hasta 22:00, National Gallery y Tate Modern
+         hasta 21:00, British Museum hasta 20:30.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="mapa"><div class="wrap">
+  <h2>Mapa</h2>
+  <p class="lead">Cada pin está en la ubicación real del sitio (coordenadas de OpenStreetMap). Haz clic para ver
+     qué es y el enlace oficial. Usa los filtros para no saturar la vista.</p>
+  <div class="filters" id="filters"></div>
+  <div id="map"></div>
+</div></section>
+
+<section id="itinerarios"><div class="wrap">
+  <h2>Tres maneras de repartir los cinco días</h2>
+  <p class="lead">Los tres planes cubren de lunes 14 a viernes 18. Ábrelos, compáralos y quédate con uno (o
+     mezcla días de varios, están pensados para que encajen). Todos respetan los días de cierre reales: el
+     Museo Soane no abre lunes ni martes, el Wellcome cierra los lunes y el Old Operating Theatre solo abre
+     de jueves a domingo.</p>
+
+  <details class="acc" name="itin">
+    <summary>
+      <span class="num">A</span>
+      <span class="tt"><strong>Los grandes éxitos</strong>
+      <em>Para quien pisa Londres por primera vez y quiere ver LO que hay que ver</em></span>
+      <span class="chev">⌄</span>
+    </summary>
+    <div class="body">
+      <div class="day">
+        <div class="dd">Lunes 14<small>South Kensington</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Natural History Museum en cuanto abre (10:00). Directo al Hintze Hall
+            por el esqueleto de ballena azul colgando del techo, luego dinosaurios y la sala de terremotos.
+            Dos horas largas.</p></div>
+          <div class="slot"><b>Comida</b><p>Salir a Exhibition Road y comer barato por Gloucester Road, o cargar
+            con sándwiches. Las cafeterías de los museos son caras.</p></div>
+          <div class="slot"><b>Tarde</b><p>Science Museum, que está literalmente a 200 metros. Apollo 10, la
+            Rocket de Stephenson y la galería de relojes. Si sobra energía, un salto rápido al V&amp;A por los
+            Cast Courts (la copia del David a tamaño real es una locura).</p></div>
+          <div class="slot"><b>Noche</b><p>Metro a Knightsbridge para ver Harrods iluminado por fuera, y cenar en
+            Chinatown: pato asado o ramen por £12–15.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Martes 15<small>Bloomsbury y Trafalgar</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>British Museum. Reserva el ticket gratis online la noche anterior para
+            entrar por la fila rápida. Piedra de Rosetta, mármoles del Partenón, momias, Sutton Hoo. No intentes
+            verlo entero: elige tres salas.</p></div>
+          <div class="slot"><b>Comida</b><p>Bajar caminando a Seven Dials Market (15 min): puestos de comida
+            asiática y bocadillos entre £8 y £12, con mesas compartidas.</p></div>
+          <div class="slot"><b>Tarde</b><p>Covent Garden con la decoración navideña y el mercado cubierto, y de
+            ahí a la National Gallery. Van Gogh, Turner, el <em>Matrimonio Arnolfini</em> y la Venus de Velázquez.</p></div>
+          <div class="slot"><b>Noche</b><p>Trafalgar Square: el abeto que Noruega manda cada año desde 1947, con
+            villancicos en vivo casi todas las tardes de diciembre. Gratis.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Miércoles 16<small>Westminster</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Big Ben y el Parlamento desde el puente de Westminster, y luego los
+            Churchill War Rooms: el búnker subterráneo desde el que se dirigió la guerra, congelado tal cual
+            quedó en 1945. Es caro (£30,60 con carnet) pero es de los pocos sitios de pago que todo el mundo
+            recomienda sin dudar.</p></div>
+          <div class="slot"><b>Comida</b><p>Cruzar a St James's Park y comer algo sentados; o el mercado de
+            comida de Strutton Ground, a diez minutos.</p></div>
+          <div class="slot"><b>Tarde</b><p>Westminster Abbey por fuera (£28 con carnet si entran) y caminata por
+            Millbank hasta Tate Britain, que casi nadie visita y tiene la mejor colección de Turner del mundo.</p></div>
+          <div class="slot"><b>Noche</b><p>Opcional: London Community Gospel Choir en el Royal Albert Hall.
+            Si no, el Southbank Centre Winter Market junto al río, que es gratis pasear.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Jueves 17<small>La City y el río</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Torre de Londres a primera hora para esquivar la cola (£29,50 con
+            carnet). Joyas de la Corona, los cuervos y los Yeoman Warders. Reserva con hora.</p></div>
+          <div class="slot"><b>Comida</b><p>Cruzar Tower Bridge a pie (gratis; subir a las pasarelas con piso de
+            cristal cuesta £13,50 con carnet) y seguir por la orilla sur hasta Borough Market. Comida callejera
+            entre £6 y £10, el mejor almuerzo barato de la ciudad.</p></div>
+          <div class="slot"><b>Tarde</b><p>Caminar de Borough a Tate Modern por la ribera. La Turbine Hall,
+            Rothko, Picasso, y la terraza del piso 10 con vista a St Paul's.</p></div>
+          <div class="slot"><b>Noche</b><p>Tate Modern abre hasta las 21:00. Salir por el Millennium Bridge con
+            St Paul's iluminada de frente: la mejor foto gratis de Londres.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Viernes 18<small>Lo nuevo + nocturno</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>London Museum en Smithfield, que abrió el 28 de noviembre de 2026 en
+            el antiguo mercado victoriano. Es gratis, es enorme y nadie que fue antes lo ha visto. 10.000 años
+            de historia de Londres y una ventana de seis metros que da a la vía del tren.</p></div>
+          <div class="slot"><b>Comida</b><p>Andar diez minutos hasta Leather Lane o quedarse en el café del propio
+            museo.</p></div>
+          <div class="slot"><b>Tarde y noche</b><p>V&amp;A: los viernes abre hasta las 22:00. Moda, joyería,
+            los Cast Courts otra vez sin prisa y el patio interior. Cenar por South Kensington o volver a Soho.</p></div>
+          <div class="slot"><b>Si cambian de idea</b><p>Alternativa de viernes por la noche: Winter Wonderland en
+            Hyde Park hasta las 22:00, entrada desde £1 si reservan franja valle.</p></div>
+        </div>
+      </div>
+      <div class="cost"><b>Gasto aproximado por persona:</b> £45 de transporte en los cinco días
+        + £30,60 (War Rooms) + £29,50 (Torre) + £13,50 (Tower Bridge, opcional) ≈ <b>£105–120</b> en entradas y
+        metro, sin contar comida.</div>
+    </div>
+  </details>
+
+  <details class="acc" name="itin">
+    <summary>
+      <span class="num">B</span>
+      <span class="tt"><strong>Museos raros y coleccionistas obsesivos</strong>
+      <em>Casas-museo, anatomía, trenes de correo y el Greenwich completo</em></span>
+      <span class="chev">⌄</span>
+    </summary>
+    <div class="body">
+      <div class="day">
+        <div class="dd">Lunes 14<small>Marylebone y Clerkenwell</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Wallace Collection, en una mansión de Manchester Square. Gratis, casi
+            vacía, y dentro está <em>El caballero sonriente</em> de Frans Hals, armaduras y porcelana de Sèvres.
+            Es el museo que todos los londinenses te recomiendan y ningún turista visita.</p></div>
+          <div class="slot"><b>Comida</b><p>Marylebone High Street o, si van hacia el norte, Roti King junto a
+            Euston: roti canai con curry por unas £10 y cola en la puerta por algo.</p></div>
+          <div class="slot"><b>Tarde</b><p>The Postal Museum en Clerkenwell y, sobre todo, el <b>Mail Rail</b>:
+            te metes en un vagón diminuto y recorres el túnel del correo subterráneo que funcionó bajo Londres
+            hasta 2003. £20,50 e incluye volver gratis todo un año.</p></div>
+          <div class="slot"><b>Noche</b><p>Exmouth Market y las luces de Clerkenwell, o volver al centro a ver las
+            de Regent Street.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Martes 15<small>Holborn y Somerset House</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Hunterian Museum, dentro del Royal College of Surgeons (martes a
+            sábado, gratis, conviene reservar). Es la colección anatómica de John Hunter: miles de especímenes
+            en frascos del siglo XVIII. No es para todo el mundo, pero quien lo aguanta no lo olvida.</p></div>
+          <div class="slot"><b>Comida</b><p>Lincoln's Inn Fields con algo de la calle, o bajar a Covent Garden.</p></div>
+          <div class="slot"><b>Tarde</b><p>Courtauld Gallery, en Somerset House: <b>gratis con carnet de
+            estudiante</b> cuando el adulto paga £14. Manet, el <em>Bar del Folies-Bergère</em>, Cézanne, Van Gogh
+            con la oreja vendada. Es una de las mejores colecciones pequeñas de Europa.</p></div>
+          <div class="slot"><b>Noche</b><p>Salir al patio de Somerset House: la pista de hielo con el árbol gigante.
+            Entrar al recinto es gratis; patinar, desde £11. Y si prefieren música, John Wilson dirige un
+            <em>Christmas Songbook</em> en el Royal Albert Hall esa noche.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Miércoles 16<small>Soane, Wellcome, Camden</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Sir John Soane's Museum (solo abre de miércoles a domingo, gratis,
+            se entra sin reserva). La casa de un arquitecto obsesivo que la llenó de sarcófagos, ruinas y
+            espejos hasta que no cupo nada más. Dentro está el sarcófago de Seti I y <em>La carrera del
+            libertino</em> de Hogarth. Aforo pequeño: llegar temprano.</p></div>
+          <div class="slot"><b>Comida</b><p>Sitios baratos en Holborn, o subir en metro a Euston.</p></div>
+          <div class="slot"><b>Tarde</b><p>Wellcome Collection, en Euston Road (cerrado los lunes, gratis).
+            Medicina, cuerpo y cosas incómodas, más una biblioteca preciosa en la que se puede entrar y sentarse.</p></div>
+          <div class="slot"><b>Noche</b><p>Dos paradas de metro hasta Camden: el mercado abierto por la noche,
+            comida de todo el mundo por £8–10 y el canal iluminado. O el gospel del Royal Albert Hall.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Jueves 17<small>Greenwich entero</small></div>
+        <div>
+          <div class="slot"><b>Ida</b><p>DLR hasta Cutty Sark (incluido en el tope diario). Se puede ir en barco
+            por el Támesis, que es más bonito y algo más caro.</p></div>
+          <div class="slot"><b>Mañana</b><p>National Maritime Museum y Queen's House: los dos gratis. El
+            <em>Retrato de la Armada</em> de Isabel I y la escalera de caracol Tulip Stairs.</p></div>
+          <div class="slot"><b>Comida</b><p>Greenwich Market, cubierto y con puestos de comida decentes por £7–10.</p></div>
+          <div class="slot"><b>Tarde</b><p>Subir la colina del parque hasta el Royal Observatory (£18 con carnet):
+            el meridiano cero, el reloj marino de Harrison y la mejor vista de la ciudad. Bajando, el Cutty Sark
+            (£18 con carnet; pase combinado con el observatorio por £28,50).</p></div>
+          <div class="slot"><b>Noche</b><p>Vuelta por Canary Wharf y, si aguantan, V&amp;A East Storehouse en
+            Hackney Wick abre hasta las 22:00 los jueves: es el almacén real del V&amp;A abierto al público,
+            gratis, con 250.000 objetos a la vista.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Viernes 18<small>Southwark y el East End</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Old Operating Theatre, en el desván de una iglesia junto a London
+            Bridge (jueves a domingo, £7 con carnet). Es el quirófano más antiguo de Europa que se conserva,
+            de cuando se operaba sin anestesia delante de un público de estudiantes. Sube por una escalera
+            de caracol estrechísima.</p></div>
+          <div class="slot"><b>Comida</b><p>Borough Market, a cinco minutos. Si quieren sentarse: Padella, pasta
+            fresca por £7–14, pero pónganse en la lista de espera en cuanto lleguen.</p></div>
+          <div class="slot"><b>Tarde</b><p>Overground al East End: Whitechapel Gallery (gratis), Brick Lane con
+            el grafiti y las tiendas de vinilo, y Old Spitalfields Market.</p></div>
+          <div class="slot"><b>Noche</b><p>Un bagel de salt beef en Beigel Bake de Brick Lane, abierto 24 horas
+            y por unas £7. Cierra el viaje comiendo lo mismo que come Londres a las tres de la mañana.</p></div>
+        </div>
+      </div>
+      <div class="cost"><b>Gasto aproximado por persona:</b> £45 de transporte + £20,50 (Mail Rail)
+        + £28,50 (pase Greenwich) + £7 (Old Operating Theatre) ≈ <b>£101</b>, y la mitad de los museos del plan
+        no cuestan nada.</div>
+    </div>
+  </details>
+
+  <details class="acc" name="itin">
+    <summary>
+      <span class="num">C</span>
+      <span class="tt"><strong>Londres entero por casi nada</strong>
+      <em>Cinco días gastando solo en transporte, comida y una noche de capricho</em></span>
+      <span class="chev">⌄</span>
+    </summary>
+    <div class="body">
+      <div class="day">
+        <div class="dd">Lunes 14<small>Bloomsbury y Soho</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>British Museum, gratis, con el ticket reservado online. Tres salas y
+            fuera: intentar verlo todo el primer día arruina el resto del viaje.</p></div>
+          <div class="slot"><b>Comida</b><p>Chinatown: Gerrard Street está a quince minutos andando y se come
+            bien por £10–12. Los bollos al vapor de las panaderías chinas salen por £2.</p></div>
+          <div class="slot"><b>Tarde</b><p>Caminata gratis: Soho, Carnaby Street, Liberty (el edificio Tudor falso
+            más famoso de Londres, entrar y mirar no cuesta nada), Hamleys con su escaparate navideño y las luces
+            de Regent Street.</p></div>
+          <div class="slot"><b>Noche</b><p>Piccadilly Circus, las pantallas, y Waterstones Piccadilly, la librería
+            más grande de Europa, con bar en el quinto piso.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Martes 15<small>Triple gratis en South Kensington</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>Natural History Museum. Ballena azul, dinosaurios y el edificio, que ya
+            es un museo en sí mismo.</p></div>
+          <div class="slot"><b>Comida</b><p>Supermercado y bancos del parque, o los puestos de Gloucester Road.
+            Gasto: £5.</p></div>
+          <div class="slot"><b>Tarde</b><p>Science Museum y, si quedan fuerzas, V&amp;A. Los tres museos están
+            en la misma calle, los tres son gratis, y entre ellos hay menos de cinco minutos andando. Es el mejor
+            trato del planeta.</p></div>
+          <div class="slot"><b>Noche</b><p>Hyde Park está al lado: cruzar por Kensington Gardens hasta Winter
+            Wonderland. Entrar cuesta desde £1 si se reserva franja valle; luego cada atracción se paga aparte,
+            así que se puede entrar solo a ver el mercado y volver.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Miércoles 16<small>Trafalgar y el Támesis</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>National Gallery, gratis. Después la National Portrait Gallery, que está
+            a la vuelta de la esquina y también es gratis: retratos de Shakespeare a Amy Winehouse.</p></div>
+          <div class="slot"><b>Comida</b><p>Covent Garden, puestos del mercado o Seven Dials Market.</p></div>
+          <div class="slot"><b>Tarde</b><p>Bajar por Whitehall hasta Westminster (Big Ben y la abadía por fuera:
+            gratis y espectacular), cruzar a la orilla sur y caminar por el Southbank hasta el Winter Market.</p></div>
+          <div class="slot"><b>Noche</b><p>El mercado del Southbank no cobra entrada y tiene vino caliente y comida
+            por £6–8. Si hay ganas de un gasto único en todo el viaje: patinar en Somerset House (desde £11).</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Jueves 17<small>El este nuevo</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>V&amp;A East Storehouse en Hackney Wick: gratis y muy poco conocido
+            todavía. Se puede pedir con antelación que te saquen cualquier objeto del almacén y verlo de cerca.</p></div>
+          <div class="slot"><b>Comida</b><p>Queen Elizabeth Olympic Park y los puestos de Stratford.</p></div>
+          <div class="slot"><b>Tarde</b><p>V&amp;A East Museum, al lado, también gratis, con la galería
+            <em>Why We Make</em>. Y de vuelta al centro, London Museum Docklands (gratis) en un almacén de
+            azúcar del siglo XVIII en West India Quay.</p></div>
+          <div class="slot"><b>Noche</b><p>Los dos V&amp;A East abren hasta las 22:00 los jueves, así que se puede
+            invertir el orden y cenar por Stratford.</p></div>
+        </div>
+      </div>
+      <div class="day">
+        <div class="dd">Viernes 18<small>Smithfield y la ribera</small></div>
+        <div>
+          <div class="slot"><b>Mañana</b><p>London Museum en Smithfield: gratis, recién abierto y probablemente
+            lo más comentado de Londres esa semana.</p></div>
+          <div class="slot"><b>Comida</b><p>Leather Lane Market, comida callejera por £6–8.</p></div>
+          <div class="slot"><b>Tarde</b><p>St Paul's por fuera, Millennium Bridge, Tate Modern (gratis) y la
+            terraza del piso 10. Si alguien tiene entre 16 y 25 años, Tate Collective deja la exposición de
+            Frida Kahlo en £5.</p></div>
+          <div class="slot"><b>Noche</b><p>Tate Modern abre hasta las 21:00 los viernes. Salida por el puente con
+            la catedral iluminada y cena en Borough o Mercato Metropolitano.</p></div>
+        </div>
+      </div>
+      <div class="cost"><b>Gasto aproximado por persona:</b> £45 de transporte en cinco días
+        + £1–8 (Winter Wonderland) + £11 (patinaje, opcional) ≈ <b>£50–65</b> en total, sin contar comida.
+        Todos los museos de este plan son gratis.</div>
+    </div>
+  </details>
+</div></section>
+
+<section id="eventos"><div class="wrap">
+  <h2>Qué está pasando del 14 al 18 de diciembre</h2>
+  <p class="lead">Todo esto está confirmado en las webs oficiales. Es la semana anterior a Navidad: la ciudad
+     está a tope de luces y mercados, pero los precios de hotel y de teatro todavía no se disparan como el
+     fin de semana del 19 al 24.</p>
+
+  <h3 style="margin:34px 0 16px; color:var(--gold)">Navidad en la calle</h3>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">todos los días</div></div>
+    <div class="body">
+      <h3>Hyde Park Winter Wonderland</h3>
+      <p>El clásico absoluto: mercado navideño alpino, montañas rusas, el Magical Ice Kingdom y circo. Del 19 de
+         noviembre al 3 de enero. Del lunes 14 al viernes 18 abre <b>de 11:00 a 22:00</b> (confirmado en su propia
+         web). La entrada al recinto es barata; lo que cuesta son las atracciones de dentro.</p>
+      <div class="meta">
+        <span class="chip">Hyde Park · Hyde Park Corner</span>
+        <span class="chip money">£1 franja valle · £5,50 estándar · £8,25 pico</span>
+        <span class="chip">Hay que reservar día y hora</span>
+        <a class="btn" href="https://hydeparkwinterwonderland.com/tickets-guide/" target="_blank" rel="noopener">Web oficial ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">todos los días</div></div>
+    <div class="body">
+      <h3>Skate at Somerset House</h3>
+      <p>Pista de hielo en el patio del palacio dieciochesco, con un árbol enorme en el centro y DJs en las
+         sesiones nocturnas. Del 11 de noviembre al 10 de enero. <b>Entrar al recinto es gratis</b> para todo el
+         mundo: solo se paga si te pones los patines. Y el Courtauld está en el mismo edificio.</p>
+      <div class="meta">
+        <span class="chip">Strand · Covent Garden</span>
+        <span class="chip free">Entrar: gratis</span>
+        <span class="chip money">Patinar: £11 – £28,50</span>
+        <a class="btn" href="https://www.somersethouse.org.uk/press/skate-at-somerset-house-with-virgin-holidays-returns-for-an-unforgettable-festive-season" target="_blank" rel="noopener">Info oficial ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">todos los días</div></div>
+    <div class="body">
+      <h3>Southbank Centre Winter Market</h3>
+      <p>Casetas de madera a lo largo del Queen's Walk, entre Jubilee Gardens y el puente de Waterloo, con vistas
+         al río y al Parlamento enfrente. Artesanía, vino caliente y comida callejera. Abierto desde principios
+         de noviembre hasta primeros de enero.</p>
+      <div class="meta">
+        <span class="chip">South Bank · junto al Támesis</span>
+        <span class="chip free">Entrada gratis</span>
+        <a class="btn" href="https://www.southbankcentre.co.uk/" target="_blank" rel="noopener">Southbank Centre ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">por la tarde</div></div>
+    <div class="body">
+      <h3>Christmas at Kew</h3>
+      <p>Un recorrido de luces de más de dos kilómetros por los jardines botánicos de Kew, con el Palm House
+         reflejado en el lago y instalaciones nuevas cada año. Del 13 de noviembre al 3 de enero, con entradas por
+         franjas desde las 16:20. Se agota rápido en diciembre, así que hay que comprar con semanas de antelación.</p>
+      <div class="meta">
+        <span class="chip">Kew, zona 3 · metro District line</span>
+        <span class="chip money">Desde ~£25 adulto</span>
+        <span class="chip">Reserva obligatoria</span>
+        <a class="btn" href="https://www.kew.org/kew-gardens/whats-on/christmas" target="_blank" rel="noopener">Kew.org ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">todo diciembre</div></div>
+    <div class="body">
+      <h3>El árbol de Trafalgar Square</h3>
+      <p>Noruega manda un abeto a Londres cada año desde 1947 como agradecimiento por la Segunda Guerra Mundial.
+         Se planta en Trafalgar Square y hay coros cantando villancicos casi todas las tardes hasta Nochebuena.
+         Gratis, y está a un minuto de la National Gallery.</p>
+      <div class="meta">
+        <span class="chip">Trafalgar Square</span>
+        <span class="chip free">Gratis</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:44px 0 16px; color:var(--gold)">Conciertos y teatro esa misma semana</h3>
+
+  <div class="ev">
+    <div class="when"><div class="d">15</div><div class="m">martes</div></div>
+    <div class="body">
+      <h3>John Wilson y la Sinfonia of London: A Christmas Songbook</h3>
+      <p>Programa navideño de orquesta grande en el Royal Albert Hall, dirigido por John Wilson, que es el
+         especialista británico en este repertorio. Una noche.</p>
+      <div class="meta">
+        <span class="chip">Royal Albert Hall · South Kensington</span>
+        <span class="chip money">Precios según localidad</span>
+        <a class="btn" href="https://www.royalalberthall.com/tickets/series/christmas-at-the-royal-albert-hall/" target="_blank" rel="noopener">Programa de Navidad ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">16</div><div class="m">miércoles</div></div>
+    <div class="body">
+      <h3>London Community Gospel Choir at Christmas</h3>
+      <p>El coro de gospel más conocido de Londres con la Heritage Orchestra, en el Albert Hall. De lo más
+         animado del programa navideño y suele tener entradas más asequibles que los conciertos clásicos.</p>
+      <div class="meta">
+        <span class="chip">Royal Albert Hall</span>
+        <a class="btn" href="https://www.royalalberthall.com/tickets/series/christmas-at-the-royal-albert-hall/" target="_blank" rel="noopener">Ver entradas ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">17–18</div><div class="m">jue y vie</div></div>
+    <div class="body">
+      <h3>Trevor Nelson's Soul Christmas</h3>
+      <p>Soul, funk y clásicos navideños con la BBC Concert Orchestra y el DJ Trevor Nelson. Dos noches seguidas,
+         justo en las fechas del viaje. Es un concierto para bailar, no para estar sentado muy quieto.</p>
+      <div class="meta">
+        <span class="chip">Royal Albert Hall</span>
+        <a class="btn" href="https://www.royalalberthall.com/tickets/series/christmas-at-the-royal-albert-hall/" target="_blank" rel="noopener">Ver entradas ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">17</div><div class="m">estreno</div></div>
+    <div class="body">
+      <h3>El Cascanueces · English National Ballet</h3>
+      <p>La temporada arranca justo el <b>jueves 17 de diciembre</b> en el London Coliseum y sigue hasta el 10 de
+         enero. Más de cien bailarines y músicos, con la English National Ballet Philharmonic tocando en directo.
+         Hay funciones de tarde (14:30) y de noche (19:30). Las localidades altas del Coliseum son de las más
+         baratas del West End.</p>
+      <div class="meta">
+        <span class="chip">London Coliseum · St Martin's Lane</span>
+        <span class="chip">2 h con intermedio</span>
+        <a class="btn" href="https://londoncoliseum.org/events/nutcracker-2026/" target="_blank" rel="noopener">London Coliseum ↗</a>
+        <a class="btn" href="https://www.ballet.org.uk/production/nutcracker/" target="_blank" rel="noopener">ENB ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">14–18</div><div class="m">en cartel</div></div>
+    <div class="body">
+      <h3>A Christmas Carol · The Old Vic</h3>
+      <p>La versión de Matthew Warchus, que cumple su novena temporada seguida y es ya una institución de
+         diciembre en Londres. Del 12 de noviembre al 9 de enero, con Giles Terera como Scrooge. Funciones de
+         tarde (14:00) y noche (19:00).</p>
+      <div class="meta">
+        <span class="chip">The Old Vic · Waterloo</span>
+        <span class="chip money">Desde ~£43 en diciembre</span>
+        <a class="btn" href="https://www.oldvictheatre.com/stage/a-christmas-carol-2026/" target="_blank" rel="noopener">Old Vic ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:44px 0 16px; color:var(--gold)">Exposiciones abiertas esos días</h3>
+
+  <div class="ev">
+    <div class="when"><div class="d">!</div><div class="m">ojo</div></div>
+    <div class="body">
+      <h3>El Tapiz de Bayeux en el British Museum — agotado</h3>
+      <p>Es la exposición del año: el tapiz vuelve a Inglaterra por primera vez en casi mil años, del 10 de
+         septiembre de 2026 al 11 de julio de 2027. <b>Las entradas de septiembre a diciembre de 2026 están
+         agotadas.</b> Las de enero a marzo salieron a la venta el 21 de octubre de 2026. Si alguien todavía
+         quiere intentarlo, conviene mirar devoluciones: el estudiante paga £25 en cualquier franja frente a
+         £27–33 de adulto, y las visitas son de 40 minutos con hora asignada.</p>
+      <div class="meta">
+        <span class="chip">British Museum · Bloomsbury</span>
+        <span class="chip money">£25 estudiante</span>
+        <a class="btn" href="https://www.britishmuseum.org/exhibitions/bayeux-tapestry" target="_blank" rel="noopener">Ver disponibilidad ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">✓</div><div class="m">abierta</div></div>
+    <div class="body">
+      <h3>Korea · British Museum</h3>
+      <p>Dos milenios de arte coreano, de la escultura antigua al presente. Del 1 de octubre de 2026 al 31 de
+         enero de 2027, así que cae de lleno en las fechas. Se reserva aparte de la entrada general (que es gratis).</p>
+      <div class="meta">
+        <span class="chip">British Museum</span>
+        <span class="chip money">Exposición de pago</span>
+        <a class="btn" href="https://www.britishmuseum.org/exhibitions" target="_blank" rel="noopener">Exposiciones ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">✓</div><div class="m">abierta</div></div>
+    <div class="body">
+      <h3>Van Eyck: The Portraits · National Gallery</h3>
+      <p>Primera exposición dedicada solo a los retratos de Jan van Eyck. Reúne el <em>Matrimonio Arnolfini</em>
+         con un panel del mismo modelo por primera vez en la historia. Del 21 de noviembre de 2026 al 11 de abril
+         de 2027. En la misma gallery sigue <b>Renoir and Love</b> hasta el 31 de enero.</p>
+      <div class="meta">
+        <span class="chip">National Gallery · Trafalgar Square</span>
+        <span class="chip free">La colección permanente sigue gratis</span>
+        <a class="btn" href="https://www.nationalgallery.org.uk/exhibitions/van-eyck-the-portraits" target="_blank" rel="noopener">Van Eyck ↗</a>
+        <a class="btn" href="https://www.nationalgallery.org.uk/exhibitions/renoir-and-love" target="_blank" rel="noopener">Renoir ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">✓</div><div class="m">abierta</div></div>
+    <div class="body">
+      <h3>Wildlife Photographer of the Year 62 · Natural History Museum</h3>
+      <p>La edición número 62 abrió el 16 de octubre de 2026 y sigue hasta julio de 2027. Cien fotos elegidas
+         entre más de 65.000, montadas en cajas de luz en una sala a oscuras. Es de pago aunque el museo sea
+         gratis, pero hay tarifa reducida.</p>
+      <div class="meta">
+        <span class="chip">Natural History Museum</span>
+        <span class="chip money">£19 adulto · £14,40 reducida</span>
+        <a class="btn" href="https://www.nhm.ac.uk/visit/exhibitions/wildlife-photographer-of-the-year.html" target="_blank" rel="noopener">NHM ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">✓</div><div class="m">abierta</div></div>
+    <div class="body">
+      <h3>Frida: The Making of an Icon · Tate Modern</h3>
+      <p>Hasta el 3 de enero de 2027. Si tienen entre 16 y 25 años, apúntense gratis a <b>Tate Collective</b> y la
+         entrada baja a <b>£5</b>. En Tate Britain, mientras tanto, está <em>The 90s: Art and Fashion</em> hasta
+         el 14 de febrero, y <em>Vanessa Bell &amp; Duncan Grant</em> hasta abril.</p>
+      <div class="meta">
+        <span class="chip">Tate Modern · Bankside</span>
+        <span class="chip free">£5 con Tate Collective (16–25)</span>
+        <a class="btn" href="https://www.tate.org.uk/whats-on" target="_blank" rel="noopener">Tate · qué hay ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev">
+    <div class="when"><div class="d">★</div><div class="m">nuevo</div></div>
+    <div class="body">
+      <h3>El London Museum acaba de abrir en Smithfield</h3>
+      <p>Abrió el <b>28 de noviembre de 2026</b>, tres semanas antes del viaje, dentro del mercado victoriano de
+         Smithfield que llevaba treinta años cerrado al público. Galerías permanentes gratis con 10.000 años de
+         historia de la ciudad, una ventana de seis metros que da directamente a la vía del tren, y sesiones de
+         DJ los viernes y sábados por la noche. Es lo más nuevo que van a poder ver en Londres.</p>
+      <div class="meta">
+        <span class="chip">West Smithfield · EC1</span>
+        <span class="chip free">Entrada gratis</span>
+        <a class="btn p" href="https://www.londonmuseum.org.uk/smithfield/" target="_blank" rel="noopener">London Museum ↗</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="museos"><div class="wrap">
+  <h2>Los museos, uno por uno</h2>
+  <p class="lead">Precios y horarios comprobados en las webs oficiales en septiembre de 2026. Vuelvan a mirarlos
+     unos días antes de viajar: en diciembre a veces cambian los horarios y todos los museos cierran del 24 al 26.</p>
+  <div class="grid" id="g-museo"></div>
+</div></section>
+
+<section id="monumentos"><div class="wrap">
+  <h2>Monumentos que vale la pena</h2>
+  <p class="lead">Varios se ven gratis por fuera y se disfrutan igual. Los que cobran, cobran bastante: elijan uno
+     o dos como mucho.</p>
+  <div class="grid" id="g-monumento"></div>
+</div></section>
+
+<section id="tiendas"><div class="wrap">
+  <h2>Tiendas y mercados</h2>
+  <p class="lead">No hace falta comprar nada. Varias de estas son visita turística por derecho propio.</p>
+  <div class="grid" id="g-tienda"></div>
+</div></section>
+
+<section id="comida"><div class="wrap">
+  <h2>Dónde comer sin arruinarse</h2>
+  <p class="lead">Precios orientativos de un plato principal. Todos estos sitios son de los que la gente que vive
+     en Londres usa de verdad, no trampas para turistas.</p>
+  <div class="grid" id="g-comida"></div>
+</div></section>
+
+<section id="resumen"><div class="wrap">
+  <h2>Resumen de todos los museos</h2>
+  <p class="lead">Todo lo anterior en una tabla, para decidir rápido. Ordenada por precio: primero los gratis.</p>
+  <div class="tablewrap"><table>
+    <thead><tr>
+      <th>Museo</th><th>Barrio</th><th>Entrada</th><th>Estudiante</th><th>Horario</th><th>Web</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div>
+</div></section>
+
+<footer><div class="wrap">
+  <p>Datos comprobados en las páginas oficiales de cada museo, sala y teatro en septiembre de 2026.
+     Coordenadas del mapa: OpenStreetMap / Nominatim. Fotos: Wikimedia Commons.
+     Los precios de diciembre pueden variar; confirmen siempre en la web oficial antes de comprar.</p>
+  <p>Buen viaje — y abríguense, que en Londres a mediados de diciembre anochece antes de las cuatro.</p>
+</div></footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* ============================================================
+   Datos: coordenadas reales (OpenStreetMap / Nominatim),
+   precios y horarios verificados en las webs oficiales, sept. 2026
+   ============================================================ */
+const P = [
+
+/* ---------------- MUSEOS GRATIS ---------------- */
+{cat:'museo', n:'British Museum', lat:51.5193118, lng:-0.1267051,
+ hood:'Bloomsbury · Great Russell St, WC1B 3DG', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–17:00 · viernes hasta 20:30 · cerrado 24–26 dic',
+ stud:'La entrada general es gratis para todo el mundo. En las exposiciones de pago hay tarifa de estudiante: la del Tapiz de Bayeux cuesta £25 con carnet frente a £27–33 de adulto.',
+ ofr:'Ocho millones de objetos de toda la historia humana repartidos en más de cincuenta salas, alrededor del Great Court cubierto por la retícula de cristal de Norman Foster.',
+ top:'La Piedra de Rosetta, los mármoles del Partenón, las momias egipcias y el casco de Sutton Hoo. En diciembre de 2026 están abiertas las exposiciones de Corea y del Tapiz de Bayeux (esta última, agotada hasta fin de año).',
+ tix:'Gratis. Se puede entrar sin reservar, pero conviene sacar el ticket gratuito online para usar la fila rápida. Las exposiciones temporales se compran aparte, online y con hora asignada.',
+ url:'https://www.britishmuseum.org/visit',
+ img:'British Museum Great Court, London, UK - Diliff.jpg',
+ dato:'Ocho millones de objetos y entrada gratis. Reserva el ticket gratuito para la fila rápida.'},
+
+{cat:'museo', n:'National Gallery', lat:51.5087208, lng:-0.1285923,
+ hood:'Trafalgar Square · entrada por el Sainsbury Wing, WC2N 5DN', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 · viernes hasta 21:00 · cerrado 24–26 dic y 1 ene',
+ stud:'Entrada general gratis. Las exposiciones (Van Eyck, Renoir) se pagan aparte y tienen tarifa reducida.',
+ ofr:'Más de mil cuadros europeos del siglo XIII al XX, colgados por orden cronológico en un solo edificio que se recorre entero en dos horas si uno se disciplina.',
+ top:'Los Girasoles de Van Gogh, el Matrimonio Arnolfini de Van Eyck, la Venus del espejo de Velázquez, el Temerario de Turner y La Virgen de las Rocas de Leonardo. En diciembre de 2026: Van Eyck: The Portraits y Renoir and Love.',
+ tix:'Gratis y se entra andando. Hay ticket gratuito online para entrada rápida. Exposiciones: online, con hora.',
+ url:'https://www.nationalgallery.org.uk/visiting',
+ img:'National Gallery, Trafalgar Square - geograph.org.uk - 7033424.jpg',
+ dato:'Mil cuadros, gratis, y los viernes abre hasta las 21:00. El árbol de Trafalgar está en la puerta.'},
+
+{cat:'museo', n:'National Portrait Gallery', lat:51.5092842, lng:-0.1283194,
+ hood:'St Martin’s Place · detrás de la National Gallery, WC2H 0HE', free:true, price:'Gratis',
+ hor:'Todos los días 10:30–18:00 · viernes y sábados hasta 21:00',
+ stud:'La colección permanente es gratis. Y si tienes entre 16 y 25 años, apúntate gratis a <b>CLUB NPG</b>: las exposiciones te salen a <b>£5</b>.',
+ ofr:'La historia de Gran Bretaña contada solo con caras: reyes Tudor, científicos, escritores, estrellas del pop. Reabrió en 2023 tras una reforma enorme y quedó preciosa.',
+ top:'El retrato Chandos de Shakespeare (el único que quizá se hizo del natural), los Tudor en la planta alta, y el retrato de Amy Winehouse. El restaurante de la azotea tiene una vista brutal de Trafalgar.',
+ tix:'Gratis, sin reserva. Exposiciones temporales online.',
+ url:'https://www.npg.org.uk/visit/',
+ img:'The National Portrait Gallery, London (geograph 4398633).jpg',
+ dato:'Retratos de Shakespeare a Amy Winehouse. Gratis, y a dos minutos de la National Gallery.'},
+
+{cat:'museo', n:'Natural History Museum', lat:51.4965109, lng:-0.1760019,
+ hood:'South Kensington · Cromwell Road, SW7 5BD', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–17:50 (última entrada 17:30) · cerrado 24–26 dic',
+ stud:'Museo gratis. Wildlife Photographer of the Year cuesta £19 adulto y £14,40 tarifa reducida.',
+ ofr:'Ochenta millones de especímenes en un edificio victoriano que parece una catedral. Dinosaurios, mineralogía, una sección de terremotos con un simulador, y el jardín de vida silvestre.',
+ top:'El esqueleto de ballena azul suspendido sobre el Hintze Hall, el T. rex animatrónico y la colección de meteoritos. En cartel hasta julio de 2027: Wildlife Photographer of the Year 62.',
+ tix:'Gratis; pide un ticket gratuito online porque en fines de semana y vacaciones se forma cola. La exposición de fotografía se compra aparte.',
+ url:'https://www.nhm.ac.uk/visit.html',
+ img:'Hintze Hall, Natural History Museum, London - 6.jpg',
+ dato:'Ballena azul colgando del techo, dinosaurios y un edificio que parece catedral. Gratis.'},
+
+{cat:'museo', n:'Science Museum', lat:51.4973983, lng:-0.1746726,
+ hood:'South Kensington · Exhibition Road, SW7 2DD', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 (última entrada 17:15) · cerrado 24–26 dic',
+ stud:'Museo gratis. Wonderlab y el cine IMAX se pagan aparte.',
+ ofr:'Siete plantas sobre cómo llegamos hasta aquí: máquinas de vapor, aviones colgados del techo, la carrera espacial, matemáticas, medicina y una galería de relojes preciosa.',
+ top:'La cápsula del Apollo 10 que dio la vuelta a la Luna, la Rocket de Stephenson, el reloj de John Harrison y la sala Information Age.',
+ tix:'Gratis pero <b>hay que reservar un ticket gratuito online</b> con franja horaria. Wonderlab y el IMAX, entrada aparte.',
+ url:'https://www.sciencemuseum.org.uk/visit',
+ img:'Science Museum, Exhibition Road, London SW7 - geograph.org.uk - 1125595.jpg',
+ dato:'Apollo 10, la locomotora Rocket y siete plantas de ingeniería. Gratis, pero reserva ticket.'},
+
+{cat:'museo', n:'Victoria and Albert Museum (V&A)', lat:51.4968838, lng:-0.1716372,
+ hood:'South Kensington · Cromwell Road, SW7 2RL', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–17:45 · <b>viernes hasta 22:00</b>',
+ stud:'Gratis. Exposiciones como Rising Voices (£17) tienen tarifa reducida con carnet.',
+ ofr:'El museo de artes decorativas y diseño más grande del mundo: moda de cinco siglos, joyería, mobiliario, fotografía, escultura, cerámica china y japonesa. Es inabarcable, así que hay que elegir.',
+ top:'Los Cast Courts, dos salas enormes llenas de copias en yeso a tamaño real del David de Miguel Ángel y de la columna de Trajano. También las galerías de moda y la de joyería.',
+ tix:'Gratis, se entra andando. Exposiciones temporales online (más barato entre semana).',
+ url:'https://www.vam.ac.uk/visit',
+ img:'Entrance to the Victoria and Albert Museum, Cromwell Road - geograph.org.uk - 6574409.jpg',
+ dato:'Diseño, moda y los Cast Courts. Gratis y los viernes abre hasta las 22:00.'},
+
+{cat:'museo', n:'Tate Modern', lat:51.5074293, lng:-0.0993416,
+ hood:'Bankside · antigua central eléctrica, junto al Millennium Bridge', free:true, price:'Gratis',
+ hor:'Domingo a jueves 10:00–18:00 · viernes y sábados hasta 21:00',
+ stud:'<b>Tate Collective</b>: si tienes entre 16 y 25 años te apuntas gratis y todas las exposiciones te cuestan £5 en lugar de £18–22. Es el mejor descuento de estudiante de Londres.',
+ ofr:'Arte moderno y contemporáneo en una central térmica reconvertida. Picasso, Rothko, Dalí, Warhol, Louise Bourgeois, y una gran instalación cambiante en la Turbine Hall.',
+ top:'La Turbine Hall, la sala Rothko a media luz, y la terraza gratuita del piso 10 del Blavatnik Building con vista a St Paul’s y la City. Hasta el 3 de enero: Frida Kahlo.',
+ tix:'Colección permanente gratis, sin reserva. Exposiciones online; con Tate Collective, £5.',
+ url:'https://www.tate.org.uk/visit/tate-modern',
+ img:'Tate Modern London June 2016.jpg',
+ dato:'Arte moderno gratis en una central eléctrica. Terraza del piso 10 con vista a St Paul’s.'},
+
+{cat:'museo', n:'Tate Britain', lat:51.4911182, lng:-0.1278188,
+ hood:'Millbank · a orillas del Támesis, SW1P 4RG', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 (última entrada 17:00)',
+ stud:'Gratis. Exposiciones a £5 con Tate Collective (16–25 años).',
+ ofr:'Quinientos años de arte británico, de los Tudor a hoy. Está mucho menos llena que Tate Modern y se disfruta con calma.',
+ top:'La Clore Gallery con la mayor colección de Turner del mundo, los prerrafaelitas y la Ofelia de Millais. En cartel: The 90s: Art and Fashion, y Vanessa Bell &amp; Duncan Grant.',
+ tix:'Gratis, sin reserva. Hay barco directo entre Tate Britain y Tate Modern (se paga, pero es un paseo bonito por el río).',
+ url:'https://www.tate.org.uk/visit/tate-britain',
+ img:'Tate Britain 2020.jpg',
+ dato:'La mejor colección de Turner del mundo, gratis, y sin las multitudes de Tate Modern.'},
+
+{cat:'museo', n:'Imperial War Museum London', lat:51.49659, lng:-0.1106595,
+ hood:'Lambeth · Lambeth Road, SE1 6HZ', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 · cerrado 24–26 dic',
+ stud:'Gratis para todos.',
+ ofr:'La guerra del siglo XX contada desde el lado británico, con un atrio central del que cuelgan un Spitfire y un Harrier. Las Galerías del Holocausto, renovadas en 2021, son de lo más serio y mejor hecho de cualquier museo europeo.',
+ top:'Las Galerías del Holocausto (recomendadas a partir de 14 años), el cuadro Gassed de Sargent y la bomba volante V-1.',
+ tix:'Gratis, sin reserva, aunque se puede pedir ticket online. Algunas exposiciones temporales se pagan.',
+ url:'https://www.iwm.org.uk/visits/iwm-london',
+ img:'Imperial War Museum, Lambeth Road - geograph.org.uk - 4826509.jpg',
+ dato:'Spitfire colgando del atrio y unas Galerías del Holocausto excepcionales. Gratis.'},
+
+{cat:'museo', n:'London Museum · Smithfield', lat:51.5182842, lng:-0.1044402,
+ hood:'West Smithfield · el antiguo mercado victoriano, EC1 9AG', free:true, price:'Gratis · NUEVO',
+ hor:'Abrió el 28 de noviembre de 2026 · horario de apertura en su web',
+ stud:'Galerías permanentes gratis para todo el mundo.',
+ ofr:'El museo de la ciudad, reinstalado en el mercado de carne victoriano de Smithfield tras una reforma de 437 millones de libras. Diez mil años de Londres, desde el Támesis prehistórico hasta el grime, con muchísimo material que llevaba décadas guardado.',
+ top:'Una ventana de seis metros que da directamente a la vía del tren que pasa bajo el museo (dicen que es la primera del mundo), y el programa inaugural London Tastes sobre la comida de la ciudad. Los viernes y sábados hay sesiones de DJ por la noche.',
+ tix:'Entrada gratis. Al ser tan reciente conviene mirar en su web si piden reserva por franjas en las primeras semanas.',
+ url:'https://www.londonmuseum.org.uk/smithfield/',
+ img:'General Market, Smithfield - geograph.org.uk - 4233961.jpg',
+ dato:'Abrió el 28 nov 2026 en el mercado victoriano de Smithfield. Gratis y recién estrenado.'},
+
+{cat:'museo', n:'V&A East Museum', lat:51.5418837, lng:-0.0135487,
+ hood:'Stratford · East Bank, Queen Elizabeth Olympic Park, E20 2AR', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 · <b>jueves y sábados hasta 22:00</b>',
+ stud:'Gratis. Solo se paga alguna exposición suelta.',
+ ofr:'La sede nueva del V&A en el este, abierta en abril de 2026 en un edificio de O’Donnell + Tuomey. Su galería principal, Why We Make, reúne 500 objetos sobre por qué la gente fabrica cosas.',
+ top:'El edificio en sí y la galería Why We Make. Hasta el 10 de enero está The Music is Black: A British Story (de pago).',
+ tix:'Gratis y sin reserva, aunque puede haber cola. Exposiciones de pago online.',
+ url:'https://www.vam.ac.uk/east',
+ img:'V^A - geograph.org.uk - 8157993.jpg',
+ dato:'La sede nueva del V&A en Stratford. Gratis, y jueves y sábados abre hasta las 22:00.'},
+
+{cat:'museo', n:'V&A East Storehouse', lat:51.5464368, lng:-0.0211827,
+ hood:'Hackney Wick · Parkes Street, E20 3AX', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–18:00 · jueves y sábados hasta 22:00',
+ stud:'Gratis.',
+ ofr:'El almacén real del V&A, abierto al público: 250.000 objetos, 350.000 libros y mil archivos a la vista, en estanterías industriales que se recorren por pasarelas. No es una exposición, es la trastienda.',
+ top:'El servicio Order an Object: pides con antelación cualquier pieza del almacén y te la sacan para que la veas de cerca, tú solo, gratis.',
+ tix:'Gratis. Order an Object se reserva con antelación en su web.',
+ url:'https://www.vam.ac.uk/east',
+ img:'Storage racking at V&A East Storehouse.jpg',
+ dato:'El almacén del V&A abierto al público: 250.000 objetos a la vista. Gratis.'},
+
+{cat:'museo', n:'Sir John Soane’s Museum', lat:51.5170754, lng:-0.1174953,
+ hood:'Holborn · 13 Lincoln’s Inn Fields, WC2A 3BP', free:true, price:'Gratis',
+ hor:'<b>Miércoles a domingo 10:00–17:00 · cerrado lunes y martes</b>',
+ stud:'Gratis para todos.',
+ ofr:'La casa del arquitecto John Soane, conservada exactamente como la dejó en 1837 por orden del Parlamento. Está atiborrada de antigüedades, moldes, cuadros y espejos colocados para engañar al ojo. El museo más raro y más querido de Londres.',
+ top:'El sarcófago de alabastro de Seti I en el sótano, la serie La carrera del libertino de Hogarth en unos paneles que se abren como un armario, y la Sala del Desayuno con su cúpula.',
+ tix:'Gratis y se entra andando, sin reserva. Aforo muy pequeño: si llegan a media mañana puede haber cola. Ojo con los días de cierre.',
+ url:'https://www.soane.org/your-visit',
+ img:"Interior view - Sir John Soane's Museum - DSC00041.jpg",
+ dato:'La casa-museo más rara de Londres, intacta desde 1837. Gratis. Cierra lunes y martes.'},
+
+{cat:'museo', n:'The Wallace Collection', lat:51.5175166, lng:-0.1530436,
+ hood:'Marylebone · Hertford House, Manchester Square, W1U 3BN', free:true, price:'Gratis',
+ hor:'Todos los días desde las 10:00 (cierra a las 17:00)',
+ stud:'Gratis para todos.',
+ ofr:'Una mansión del siglo XVIII con la colección privada que la familia Hertford donó a la nación: pintura antigua, porcelana de Sèvres, muebles franceses y una de las mejores colecciones de armaduras de Europa.',
+ top:'El caballero sonriente de Frans Hals, Los columpios de Fragonard, y la galería de armaduras del sótano. Como es gratis y nadie la conoce, casi siempre está vacía.',
+ tix:'Gratis, se entra andando. No hace falta reservar nada.',
+ url:'https://www.wallacecollection.org/visit/',
+ img:'Hertford House Wallace Collection.jpg',
+ dato:'Mansión georgiana con Frans Hals, Fragonard y armaduras. Gratis y casi siempre vacía.'},
+
+{cat:'museo', n:'Wellcome Collection', lat:51.5259739, lng:-0.1340195,
+ hood:'Euston · 183 Euston Road, NW1 2BE', free:true, price:'Gratis',
+ hor:'<b>Martes a domingo 10:00–18:00 · cerrado los lunes</b>',
+ stud:'Gratis, incluidas las exposiciones.',
+ ofr:'Museo sobre medicina, cuerpo y salud, mitad histórico y mitad contemporáneo, montado con la colección obsesiva de Henry Wellcome. Todas las exposiciones son gratis y la biblioteca de lectura es preciosa y abierta.',
+ top:'La galería Being Human y la Reading Room, una sala en varios niveles donde puedes sentarte a hojear libros y mirar objetos sin ninguna prisa.',
+ tix:'Gratis, sin reserva. Los eventos se apuntan online.',
+ url:'https://wellcomecollection.org/visit-us',
+ img:'The Wellcome Collection in Euston Road - geograph.org.uk - 777639.jpg',
+ dato:'Medicina, cuerpo y una biblioteca abierta preciosa. Gratis, pero cierra los lunes.'},
+
+{cat:'museo', n:'Hunterian Museum', lat:51.5151836, lng:-0.1161176,
+ hood:'Holborn · Royal College of Surgeons, 38–43 Lincoln’s Inn Fields, WC2A 3PE', free:true, price:'Gratis',
+ hor:'<b>Martes a sábado 10:00–17:00</b> (última entrada 16:00) · cerrado domingo y lunes',
+ stud:'Gratis para todos.',
+ ofr:'La colección anatómica del cirujano John Hunter, del siglo XVIII: miles de especímenes humanos y animales en frascos, instrumental quirúrgico y las salas donde se enseñaba anatomía. Reabrió en 2023 con un montaje mucho más respetuoso.',
+ top:'La pared entera de frascos, el esqueleto reconstruido y los estudios comparativos de Hunter. Los miércoles a las 14:15 hay una visita guiada de media hora con un conservador, gratis y por orden de llegada.',
+ tix:'Gratis. Se recomienda reservar online para no hacer cola en horas punta.',
+ url:'https://hunterianmuseum.org/visit',
+ img:'Royal College of Surgeons of England September 2023.jpg',
+ dato:'Miles de especímenes anatómicos del siglo XVIII. Gratis, martes a sábado. No apto para todos.'},
+
+{cat:'museo', n:'National Maritime Museum y Queen’s House', lat:51.4807759, lng:-0.0051225,
+ hood:'Greenwich · Romney Road, SE10 9NF', free:true, price:'Gratis',
+ hor:'Todos los días, horario habitual 10:00–17:00',
+ stud:'Los dos son gratis. El Observatorio y el Cutty Sark, que están al lado, sí se pagan (£18 con carnet cada uno).',
+ ofr:'El museo marítimo más grande del mundo: navegación, imperio, comercio, esclavitud, la marina real. La Queen’s House de al lado es una villa palladiana de 1616 que hoy funciona como galería de arte, también gratis.',
+ top:'El uniforme con el agujero de bala que llevaba Nelson en Trafalgar, y en la Queen’s House el Retrato de la Armada de Isabel I y la escalera de caracol Tulip Stairs.',
+ tix:'Gratis, sin reserva. Si además quieren el Observatorio y el Cutty Sark, el pase combinado sale a £28,50 de estudiante en lugar de £36.',
+ url:'https://www.rmg.co.uk/national-maritime-museum',
+ img:'Exterior of the National Maritime Museum, Greenwich (January 2024) 02.jpg',
+ dato:'El mayor museo marítimo del mundo, gratis, con el uniforme de Nelson de Trafalgar.'},
+
+{cat:'museo', n:'London Museum Docklands', lat:51.5076342, lng:-0.0238687,
+ hood:'Canary Wharf · No.1 Warehouse, West India Quay, E14 4AL', free:true, price:'Gratis',
+ hor:'Todos los días 10:00–17:00',
+ stud:'Gratis para todos.',
+ ofr:'La historia del puerto de Londres dentro de un almacén de azúcar georgiano de 1802, con los suelos de madera originales. Incluye London, Sugar &amp; Slavery, la galería permanente sobre el papel de la ciudad en la trata atlántica.',
+ top:'Sailortown, una recreación a tamaño real de los callejones del puerto victoriano por los que se camina a oscuras. Y el contraste de salir del almacén y encontrarte los rascacielos de Canary Wharf.',
+ tix:'Gratis, sin reserva.',
+ url:'https://www.londonmuseum.org.uk/docklands/',
+ img:'London Museum Docklands and West India Quay 2025-05-12.jpg',
+ dato:'Historia del puerto en un almacén de azúcar de 1802. Gratis, junto a Canary Wharf.'},
+
+{cat:'museo', n:'Design Museum', lat:51.4999153, lng:-0.2001566,
+ hood:'Kensington · 224–238 Kensington High Street, W8 6AG', free:true, price:'Permanente gratis',
+ hor:'Lunes a jueves 10:00–17:00 · viernes a domingo 10:00–18:00',
+ stud:'La galería permanente Designer Maker User es gratis y no necesita ticket. Las temporales se pagan y suelen tener tarifa de estudiante.',
+ ofr:'Diseño industrial y gráfico del siglo XX y XXI, en el antiguo Commonwealth Institute, un edificio de los sesenta con una cubierta de hormigón hiperbólica que por sí sola justifica el viaje.',
+ top:'Designer Maker User, en la planta 2: mil objetos que explican cómo llegó el diseño a todo lo que tocas. Y la sala central vista desde arriba.',
+ tix:'Permanente gratis, se entra andando. Temporales online. Solo aceptan pago con tarjeta.',
+ url:'https://designmuseum.org/visit-us',
+ img:'Design Museum, Kensington, London, March 2017 (01).JPG',
+ dato:'Diseño del siglo XX bajo una cubierta de hormigón de los sesenta. Permanente gratis.'},
+
+{cat:'museo', n:'Whitechapel Gallery', lat:51.5161718, lng:-0.0703132,
+ hood:'East End · 77–82 Whitechapel High Street, E1 7QX', free:true, price:'Gratis',
+ hor:'<b>Martes a domingo 11:00–18:00 · jueves hasta 21:00 · cerrado lunes</b>',
+ stud:'Gratis.',
+ ofr:'Galería de arte contemporáneo con más de cien años de historia: aquí se expuso el Guernica en 1939 y aquí se descubrió a Pollock y a Rothko en Gran Bretaña. Edificio Arts and Crafts precioso.',
+ top:'Las exposiciones rotan, así que se entra sin saber qué vas a ver. Está a cinco minutos andando de Brick Lane, así que encaja perfecto en una tarde por el East End.',
+ tix:'Gratis, sin reserva.',
+ url:'https://www.whitechapelgallery.org/visit/',
+ img:'Whitechapel Gallery, London, June 2023.jpg',
+ dato:'Arte contemporáneo gratis en el East End, a cinco minutos de Brick Lane. Cierra lunes.'},
+
+{cat:'museo', n:'Horniman Museum', lat:51.4410175, lng:-0.0609957,
+ hood:'Forest Hill · 100 London Road, SE23 3PQ (zona 3)', free:true, price:'Gratis',
+ hor:'Todos los días, horario habitual 10:00–17:30',
+ stud:'Museo y jardines gratis. El acuario y algunas exposiciones se pagan.',
+ ofr:'Colección etnográfica, de historia natural y de instrumentos musicales reunida por un comerciante de té victoriano, más un jardín con una de las mejores vistas del sur de Londres.',
+ top:'La morsa disecada de más, rellenada por un taxidermista que nunca había visto una morsa viva y no sabía que tenían arrugas. Es la mascota extraoficial del museo.',
+ tix:'Gratis para museo y jardines; acuario y temporales, online. Está lejos (tren desde London Bridge, 20 min).',
+ url:'https://www.horniman.ac.uk/',
+ img:'Horniman Museum tower, 2015.jpg',
+ dato:'La morsa sobre-rellenada más famosa de Inglaterra, etnografía e instrumentos. Gratis.'},
+
+/* ---------------- MUSEOS DE PAGO ---------------- */
+{cat:'museo', n:'The Courtauld Gallery', lat:51.5116244, lng:-0.1177002,
+ hood:'Strand · ala norte de Somerset House, WC2R 0RN', free:false, price:'£14 · GRATIS estudiantes',
+ hor:'Todos los días 10:00–18:00 (última entrada 17:15)',
+ stud:'<b>Entrada gratis para estudiantes</b> con carnet, y también para menores de 18 y profesores. Es probablemente el mejor descuento de estudiante de toda la ciudad.',
+ ofr:'Una de las mejores colecciones pequeñas de Europa, con impresionismo y postimpresionismo de primer nivel en un palacio del siglo XVIII compartido con la pista de hielo del patio.',
+ top:'Un bar del Folies-Bergère de Manet, el Autorretrato con la oreja vendada de Van Gogh, Cézanne, Gauguin, Degas y Rubens. Todo en una hora y media.',
+ tix:'Se reserva online (gratis con carnet de estudiante) o se saca en el mostrador el mismo día si queda sitio. Solo aceptan tarjeta.',
+ url:'https://courtauld.ac.uk/gallery/plan-your-visit/',
+ img:'Courtauld Gallery, Staircase.jpg',
+ dato:'Manet, Van Gogh y Cézanne. GRATIS con carnet de estudiante (£14 los adultos).'},
+
+{cat:'museo', n:'Churchill War Rooms', lat:51.5022101, lng:-0.129252,
+ hood:'Westminster · King Charles Street, SW1A 2AQ', free:false, price:'£34 · £30,60 estudiante',
+ hor:'Todos los días, horario habitual 09:30–18:00 (última entrada 17:00)',
+ stud:'Tarifa de concesión £30,60 (desde abril de 2026) presentando carnet de estudiante en vigor.',
+ ofr:'El búnker subterráneo desde el que el gobierno británico dirigió la Segunda Guerra Mundial, cerrado y sellado en 1945 y reabierto tal cual. Incluye el Churchill Museum.',
+ top:'La Sala de Mapas, con los alfileres de colores en el sitio exacto en el que los dejaron el día que apagaron la luz, y el dormitorio de Churchill. Es caro, pero nadie sale decepcionado.',
+ tix:'Se compra online con franja horaria; se puede llegar hasta 30 minutos después de la hora reservada. Casi siempre se agota, así que reserven con días de antelación.',
+ url:'https://www.iwm.org.uk/visits/churchill-war-rooms',
+ img:'Map Room, Churchill War Rooms.jpg',
+ dato:'El búnker de Churchill, sellado en 1945 y reabierto intacto. £30,60 con carnet.'},
+
+{cat:'museo', n:'London Transport Museum', lat:51.5119839, lng:-0.1212265,
+ hood:'Covent Garden · Piazza, WC2E 7BB', free:false, price:'£24,50 · £23,50 estudiante',
+ hor:'Todos los días (abren 362 días al año), horario habitual 10:00–18:00',
+ stud:'£23,50 con carnet. La entrada vale como <b>pase anual</b>: puedes volver todo el año gratis.',
+ ofr:'Doscientos años de transporte londinense en el antiguo mercado de flores de Covent Garden: autobuses de caballos, vagones de metro originales en los que te puedes montar, y la historia del diseño gráfico del Underground.',
+ top:'Los trenes y autobuses históricos por los que se puede pasear por dentro, y la tienda, que es de las mejores de Londres para souvenirs (los cojines con la tela de los asientos del metro).',
+ tix:'Online o en taquilla. Como la entrada es un pase anual, cunde mucho si vuelven a Londres.',
+ url:'https://www.ltmuseum.co.uk/visit',
+ img:'London Transport Museum in Covent Garden 07.jpg',
+ dato:'Metros y autobuses históricos por dentro. £23,50 con carnet y vale un año entero.'},
+
+{cat:'museo', n:'Royal Observatory Greenwich', lat:51.4773623, lng:-0.0008456,
+ hood:'Greenwich Park · Blackheath Avenue, SE10 8XJ', free:false, price:'£24 · £18 estudiante',
+ hor:'Todos los días, horario habitual 10:00–17:00',
+ stud:'£18 con carnet. Pase combinado con el Cutty Sark: £28,50 estudiante (frente a £38 de adulto).',
+ ofr:'El observatorio donde se fijó el meridiano de Greenwich y desde donde se cuenta la hora del mundo. Incluye la Flamsteed House, la sala del tiempo y el planetario (sesiones aparte).',
+ top:'Pisar la línea del meridiano cero con un pie en cada hemisferio, y los relojes marinos de John Harrison, los que por fin resolvieron el problema de la longitud. La subida por el parque tiene la mejor vista de Londres.',
+ tix:'Online en rmg.co.uk (más barato) o en taquilla. Entrada con franja horaria.',
+ url:'https://www.rmg.co.uk/royal-observatory',
+ img:'London, Greenwich, Royal Greenwich Observatory -- 2016 -- 4695.jpg',
+ dato:'El meridiano cero y los relojes de Harrison. £18 con carnet; vista brutal de la ciudad.'},
+
+{cat:'museo', n:'Cutty Sark', lat:51.482933, lng:-0.0096145,
+ hood:'Greenwich · King William Walk, SE10 9HT', free:false, price:'£22 · £18 estudiante',
+ hor:'Todos los días, horario habitual 10:00–17:00',
+ stud:'£18 con carnet; £28,50 el pase combinado con el Observatorio.',
+ ofr:'El último clíper del té que queda en el mundo, de 1869, montado en seco y levantado tres metros para que se pueda caminar por debajo del casco.',
+ top:'Caminar bajo el casco de cobre, que es una experiencia rarísima, y subir a cubierta a ver el aparejo. Se ve entero en una hora larga.',
+ tix:'Online o taquilla, con franja horaria.',
+ url:'https://www.rmg.co.uk/cutty-sark',
+ img:'Cutty Sark Frontage, Greenwich.jpg',
+ dato:'El último clíper del té del mundo, levantado para caminar bajo su casco. £18 con carnet.'},
+
+{cat:'museo', n:'The Postal Museum y Mail Rail', lat:51.5247243, lng:-0.1139982,
+ hood:'Clerkenwell · 15–20 Phoenix Place, WC1X 0DA', free:false, price:'£20,50',
+ hor:'Todos los días, horario habitual 10:00–17:00',
+ stud:'No hay tarifa de estudiante como tal, pero la entrada <b>vale un año entero</b> e incluye un viaje en Mail Rail.',
+ ofr:'La historia del correo británico y, sobre todo, el ferrocarril subterráneo que movía las cartas bajo Londres entre 1927 y 2003, sin conductores y a oscuras.',
+ top:'El Mail Rail: te metes en un vagoncito diminuto y recorres 15 minutos del túnel original a seis metros bajo tierra. Hay que ir con poca claustrofobia y sin mochilas grandes.',
+ tix:'Se recomienda comprar online con franja horaria; se agota. En taquilla solo si queda sitio.',
+ url:'https://www.postalmuseum.org/visit-us/tickets/',
+ img:'Mail Rail at The Postal Museum 2023-05-14.jpg',
+ dato:'Recorres en vagoneta el ferrocarril del correo bajo Londres. £20,50 y vale un año.'},
+
+{cat:'museo', n:'Old Operating Theatre Museum', lat:51.505025, lng:-0.0885198,
+ hood:'London Bridge · 9a St Thomas Street, SE1 9RY', free:false, price:'£9 · £7 estudiante',
+ hor:'<b>Jueves a domingo 10:30–17:00</b> (última entrada 16:15)',
+ stud:'£7 con carnet de estudiante.',
+ ofr:'El quirófano más antiguo de Europa que se conserva, escondido en el desván de la iglesia de St Thomas desde 1822 y redescubierto en 1956. Al lado, el herbario donde se preparaban los remedios del hospital.',
+ top:'La grada de madera desde la que los estudiantes veían operar sin anestesia y sin antisépticos. Se sube por una escalera de caracol muy estrecha (32 escalones, sin ascensor).',
+ tix:'Online o en taquilla. Es pequeño: una hora basta. Está a dos minutos de Borough Market.',
+ url:'https://oldoperatingtheatre.com/visiting-us/',
+ img:'The Old Operating Theatre Museum, Southwark - geograph.org.uk - 5495585.jpg',
+ dato:'El quirófano más antiguo de Europa, en el desván de una iglesia. £7 con carnet. Jue–dom.'},
+
+/* ---------------- MONUMENTOS ---------------- */
+{cat:'monumento', n:'Torre de Londres', lat:51.508217, lng:-0.0761879,
+ hood:'Tower Hill · EC3N 4AB', free:false, price:'£37 · £29,50 estudiante',
+ hor:'Todos los días, horario habitual 09:00–17:30 en invierno',
+ stud:'£29,50 con carnet de estudiante a tiempo completo (frente a £37 de adulto). Hay que enseñarlo en la entrada.',
+ ofr:'Fortaleza normanda de 1078, prisión, palacio, casa de la moneda y hoy guardián de las Joyas de la Corona. Los Yeoman Warders dan visitas guiadas gratuitas incluidas en la entrada.',
+ top:'Las Joyas de la Corona, la White Tower, los cuervos (la leyenda dice que si se van, cae el reino) y el paseo por las murallas. Entrar a primera hora o después de las 14:00.',
+ tix:'Online en hrp.org.uk, con franja horaria y bastante más barato que en taquilla. Reservar con dos semanas de antelación en temporada alta.',
+ url:'https://www.hrp.org.uk/tower-of-london/visit/tickets-and-prices/',
+ img:'Tower of London viewed from the River Thames.jpg',
+ dato:'Joyas de la Corona, cuervos y mil años de fortaleza. £29,50 con carnet de estudiante.'},
+
+{cat:'monumento', n:'Tower Bridge', lat:51.5055158, lng:-0.0753665,
+ hood:'Entre Tower Hill y Bermondsey · SE1 2UP', free:false, price:'Cruzarlo gratis · dentro £18 / £13,50',
+ hor:'Todos los días 09:30–18:00 (última entrada 17:00) · cerrado 24–26 dic',
+ stud:'<b>£13,50</b> la tarifa de concesión, que incluye a estudiantes mayores de 18 con carnet (adulto £18).',
+ ofr:'El puente levadizo victoriano de 1894. Cruzarlo andando es gratis; la entrada da acceso a las pasarelas altas con suelo de cristal y a las salas de máquinas de vapor originales.',
+ top:'Tumbarse sobre el suelo de cristal a 42 metros mientras pasa un autobús rojo por debajo. Miren en su web los horarios de apertura del puente: verlo levantarse desde abajo es gratis.',
+ tix:'Online (se puede reservar hasta 8 semanas antes) o en taquilla. La cola es al aire libre, así que abríguense.',
+ url:'https://www.towerbridge.org.uk/whats-on/entry-to-tower-bridge',
+ img:'Tower Bridge London Feb 2006.jpg',
+ dato:'Cruzarlo es gratis. Entrar a las pasarelas de cristal, £13,50 con carnet.'},
+
+{cat:'monumento', n:'Abadía de Westminster', lat:51.499399, lng:-0.127391,
+ hood:'Westminster · SW1P 3PA', free:false, price:'£31 · £28 estudiante',
+ hor:'Lunes a sábado, horario habitual 09:30–15:30 · domingos solo culto',
+ stud:'£28 con carnet. Y hay una alternativa: <b>asistir gratis</b> a los oficios diarios, incluido el Evensong cantado por el coro sobre las 17:00 entre semana.',
+ ofr:'Mil años de coronaciones, bodas y entierros reales. Dentro están enterrados Newton, Darwin, Dickens y Stephen Hawking, además de la esquina de los poetas.',
+ top:'La Rincón de los Poetas, la tumba del Soldado Desconocido y las Queen’s Diamond Jubilee Galleries en el triforio (£5 más), desde donde se ve la nave desde 16 metros de altura.',
+ tix:'Online, con hora, y el ticket comprado en su web se puede convertir gratis en pase anual para volver tres veces.',
+ url:'https://www.westminster-abbey.org/visit-us/prices-and-entry-times',
+ img:'Westminster Abbey front, 2017.jpg',
+ dato:'£28 con carnet, o gratis si entras al Evensong cantado de las 17:00 entre semana.'},
+
+{cat:'monumento', n:'Catedral de San Pablo', lat:51.5137872, lng:-0.0984506,
+ hood:'City of London · EC4M 8AD', free:false, price:'£27 · descuentos con carnet',
+ hor:'Lunes a sábado desde las 08:30, última entrada turística sobre las 16:00',
+ stud:'Hay descuentos de concesión comprando en su web. Y, como en la abadía, <b>los oficios son gratis</b>: el Evensong diario deja entrar sin pagar.',
+ ofr:'La catedral de Christopher Wren, terminada en 1710 tras el Gran Incendio. Cripta con las tumbas de Nelson y Wellington, y tres galerías en la cúpula.',
+ top:'Subir los 528 escalones hasta la Golden Gallery, encima de la cúpula, con la mejor vista de la City. Por el camino, la Whispering Gallery, donde un susurro pegado a la pared se oye al otro lado.',
+ tix:'Online (más barato) o en taquilla. Cerrada al turismo los domingos.',
+ url:'https://www.stpauls.co.uk/visits/visits/plan-your-visit',
+ img:"Saint Paul's Cathedral, London.jpg",
+ dato:'528 escalones hasta la cúpula. £27, o entra gratis al Evensong de la tarde.'},
+
+{cat:'monumento', n:'The Monument', lat:51.5101415, lng:-0.0859491,
+ hood:'City of London · Fish Street Hill, EC3R 8AH', free:false, price:'£7 · £5,30 estudiante',
+ hor:'Todos los días, horario habitual 09:30–18:00 (invierno hasta las 17:00)',
+ stud:'£5,30 con carnet. Es la vista panorámica más barata de Londres con diferencia.',
+ ofr:'Columna dórica de 62 metros levantada por Wren para conmemorar el Gran Incendio de 1666. Está exactamente a 62 metros del punto donde empezó el fuego.',
+ top:'Los 311 escalones de caracol hasta el mirador. Al bajar te dan un certificado por haber subido. Ojo: <b>solo aceptan efectivo</b>.',
+ tix:'En taquilla, al pie de la columna, en efectivo. No hace falta reservar.',
+ url:'https://www.themonument.org.uk/',
+ img:'Monument to the Great Fire of London 2.jpg',
+ dato:'311 escalones, £5,30 con carnet y te dan certificado. Solo efectivo.'},
+
+{cat:'monumento', n:'Big Ben y el Parlamento', lat:51.5006944, lng:-0.1245749,
+ hood:'Westminster · SW1A 0AA', free:true, price:'Ver por fuera: gratis',
+ hor:'Se ve a cualquier hora · mejor al atardecer, sobre las 16:00 en diciembre',
+ stud:'Gratis desde la calle. Las visitas guiadas al interior del Parlamento se reservan aparte y tienen tarifa reducida.',
+ ofr:'La Elizabeth Tower (el Big Ben es en realidad la campana) y el Palacio de Westminster neogótico, junto al río.',
+ top:'Verlo desde el puente de Westminster al anochecer, con las esferas del reloj iluminadas. En diciembre el sol se pone antes de las 16:00, así que da tiempo de sobra.',
+ tix:'Nada que comprar para verlo por fuera.',
+ url:'https://www.parliament.uk/visiting/',
+ img:'Big Ben Elizabeth Tower London 2023 01.jpg',
+ dato:'Gratis desde el puente de Westminster. En diciembre se ilumina antes de las 16:00.'},
+
+{cat:'monumento', n:'Trafalgar Square', lat:51.5073978, lng:-0.1282407,
+ hood:'Westminster · WC2N 5DN', free:true, price:'Gratis',
+ hor:'Siempre abierto · villancicos casi todas las tardes de diciembre',
+ stud:'Gratis.',
+ ofr:'La plaza central de Londres, con la columna de Nelson, los leones de bronce y el Fourth Plinth, en el que se instala una obra de arte contemporáneo distinta cada dos años.',
+ top:'En diciembre, el abeto que Noruega manda cada año desde 1947 para agradecer la ayuda británica en la guerra. Hay coros cantando alrededor casi todas las tardes.',
+ tix:'Nada. Y tiene la National Gallery y la National Portrait Gallery pegadas, las dos gratis.',
+ url:'https://www.london.gov.uk/who-we-are/city-halls-buildings-and-squares/trafalgar-square/christmas',
+ img:'Trafalgar square Christmas tree and fountain 2022.jpg',
+ dato:'El abeto que Noruega manda desde 1947, con villancicos en vivo. Gratis.'},
+
+{cat:'monumento', n:'Palacio de Buckingham', lat:51.5008349, lng:-0.1430045,
+ hood:'St James’s · SW1A 1AA', free:true, price:'Cambio de guardia: gratis',
+ hor:'Las State Rooms solo abren en verano · el cambio de guardia se hace varios días a la semana a las 11:00',
+ stud:'El cambio de guardia es gratis. En invierno el interior está cerrado, así que no hay entrada que comprar.',
+ ofr:'La residencia oficial del monarca. En diciembre no se visita por dentro, pero el cambio de guardia con la banda militar sigue haciéndose.',
+ top:'Colocarse en el Victoria Memorial (el monumento redondo de delante) una media hora antes; desde ahí se ve mucho mejor que pegado a la verja. Comprueben el calendario porque no es todos los días.',
+ tix:'Nada que comprar. Miren el calendario oficial del cambio de guardia antes de ir.',
+ url:'https://www.householddivision.org.uk/changing-the-guard-calendar',
+ img:'',
+ dato:'En invierno no se visita por dentro, pero el cambio de guardia sigue siendo gratis.'},
+
+/* ---------------- TIENDAS ---------------- */
+{cat:'tienda', n:'Hamleys', lat:51.5128914, lng:-0.1399477,
+ hood:'Regent Street · W1B 5BT', free:true, price:'Entrar: gratis',
+ ofr:'La juguetería más antigua del mundo (1760), siete plantas con demostradores haciendo trucos en cada una. En diciembre es un circo, en el buen sentido.',
+ top:'El escaparate navideño y la planta de peluches. Aunque no compres nada, entrar es parte de la experiencia de Regent Street en diciembre.',
+ url:'https://www.hamleys.com/', img:'Christmas window display, Hamleys, Regent Street W1 - geograph.org.uk - 4260850.jpg',
+ dato:'La juguetería más antigua del mundo, 7 plantas. En diciembre, escaparate legendario.'},
+
+{cat:'tienda', n:'Liberty London', lat:51.5138347, lng:-0.1401582,
+ hood:'Great Marlborough Street · W1B 5AH', free:true, price:'Entrar: gratis',
+ ofr:'Grandes almacenes de 1875 en un edificio Tudor falso construido en 1924 con la madera de dos barcos de guerra. Por dentro es un patio de galerías de madera con chimeneas.',
+ top:'El edificio en sí, la sección de telas estampadas de Liberty (icónicas) y la decoración navideña, que es la mejor de Londres sin discusión.',
+ url:'https://www.libertylondon.com/', img:'Liberty, London (January 2024) 01.jpg',
+ dato:'Edificio Tudor de 1924 hecho con la madera de dos barcos. La mejor decoración navideña.'},
+
+{cat:'tienda', n:'Fortnum & Mason', lat:51.5081856, lng:-0.1381409,
+ hood:'181 Piccadilly · W1A 1ER', free:true, price:'Entrar: gratis',
+ ofr:'Tienda de comestibles de lujo fundada en 1707, con su color verde eau-de-nil por todas partes. Té, mermeladas, galletas y cestas de regalo caras.',
+ top:'La planta baja de té y las latas de galletas, que son el souvenir clásico de Londres. En Navidad montan un escaparate enorme. Para un regalo barato: una lata pequeña de té por unas £6.',
+ url:'https://www.fortnumandmason.com/', img:'Fortnum and Mason Piccadilly Exterior Nov 2020.jpg',
+ dato:'Comestibles de lujo desde 1707. Una lata de té por £6 es el souvenir perfecto.'},
+
+{cat:'tienda', n:'Foyles', lat:51.5142726, lng:-0.130083,
+ hood:'107 Charing Cross Road · WC2H 0DT', free:true, price:'Entrar: gratis',
+ ofr:'Cuatro plantas de libros en la calle de las librerías de Londres, con café arriba y una sección enorme de arte y de idiomas.',
+ top:'El atrio central con la escalera, y la planta de partituras. Está a cinco minutos del British Museum y de Seven Dials.',
+ url:'https://www.foyles.co.uk/', img:'Foyles, Charing Cross Road (April 2015) (cropped).jpg',
+ dato:'La librería grande de Charing Cross Road. Cuatro plantas y café en la última.'},
+
+{cat:'tienda', n:'Forbidden Planet', lat:51.515081, lng:-0.127338,
+ hood:'179 Shaftesbury Avenue · WC2H 8JR', free:true, price:'Entrar: gratis',
+ ofr:'La tienda de cómics, manga, ciencia ficción y figuras más conocida del Reino Unido. Dos plantas, sótano lleno de cómics.',
+ top:'El sótano de cómics y la sección de merchandising. Suele haber firmas de autores. A dos minutos de Covent Garden.',
+ url:'https://forbiddenplanet.com/', img:'Forbidden Planet London January 2012.jpg',
+ dato:'Cómics, manga y figuras en dos plantas. A dos minutos de Covent Garden.'},
+
+{cat:'tienda', n:'Waterstones Piccadilly', lat:51.5089945, lng:-0.1358776,
+ hood:'203–206 Piccadilly · W1J 9HD', free:true, price:'Entrar: gratis',
+ ofr:'La librería más grande de Europa: ocho plantas en un edificio art déco de los años treinta que fue los almacenes Simpson.',
+ top:'El bar de la quinta planta, con vista sobre los tejados de Piccadilly. Es un sitio perfecto para refugiarse una hora si está lloviendo, que en diciembre pasa.',
+ url:'https://www.waterstones.com/bookshops/piccadilly', img:'Waterstones Piccadilly 2025-11-14.jpg',
+ dato:'La librería más grande de Europa, ocho plantas, con bar y vistas en la quinta.'},
+
+{cat:'tienda', n:'Camden Market', lat:51.5412627, lng:-0.1461922,
+ hood:'Camden Lock · NW1 8AF', free:true, price:'Entrar: gratis',
+ ofr:'Mercado de ropa alternativa, vinilos, tatuajes y comida callejera de todo el mundo, repartido entre los establos victorianos y el canal.',
+ top:'Camden Lock y los puestos de comida junto al agua, con platos de todo el mundo por £8–10. Por la noche está iluminado y es de los sitios más animados de Londres entre semana.',
+ url:'https://camdenmarket.com/', img:'Camden Lock Market - geograph.org.uk - 5628893.jpg',
+ dato:'Ropa alternativa, vinilos y comida del mundo junto al canal. Barato y abierto de noche.'},
+
+{cat:'tienda', n:'Old Spitalfields Market', lat:51.5196, lng:-0.075363,
+ hood:'East End · Commercial Street, E1 6EW', free:true, price:'Entrar: gratis',
+ ofr:'Mercado cubierto victoriano con puestos que cambian según el día: antigüedades los jueves, diseño y vintage el resto de la semana, y comida todos los días.',
+ top:'Los puestos de diseñadores independientes, mucho mejores para un regalo que cualquier tienda de souvenirs. Está a cinco minutos de Brick Lane y de la Whitechapel Gallery.',
+ url:'https://www.spitalfields.co.uk/', img:'Old Spitalfields Market (3) 2024-12-21.jpg',
+ dato:'Mercado victoriano cubierto con diseño independiente y comida. A 5 min de Brick Lane.'},
+
+{cat:'tienda', n:'Covent Garden Market', lat:51.5119791, lng:-0.1227413,
+ hood:'Covent Garden · WC2E 8RF', free:true, price:'Entrar: gratis',
+ ofr:'El antiguo mercado de frutas, hoy galerías cubiertas con tiendas, el Apple Market de artesanía y músicos clásicos tocando en el sótano abovedado.',
+ top:'En diciembre monta el árbol de Navidad más fotografiado de Londres y unas bolas gigantes colgando de la plaza. Los artistas callejeros de la piazza son de verdad buenos.',
+ url:'https://www.coventgarden.london/', img:'Covent Garden Market Building 1.jpg',
+ dato:'Mercado cubierto con artesanía, músicos y el árbol más fotografiado de Londres.'},
+
+{cat:'tienda', n:'Harrods', lat:51.4992104, lng:-0.1629893,
+ hood:'Knightsbridge · 87–135 Brompton Road, SW1X 7XL', free:true, price:'Entrar: gratis',
+ ofr:'Siete plantas y 330 departamentos. No es para comprar con presupuesto de estudiante, pero las salas de comida egipcias y la fachada iluminada en diciembre valen la visita.',
+ top:'El Food Hall con sus azulejos art nouveau y, por fuera, las 11.500 bombillas de la fachada encendidas de noche. A diez minutos andando del V&A.',
+ url:'https://www.harrods.com/', img:'Harrods Knightsbridge exterior Christmas decorations in November 2022.jpg',
+ dato:'11.500 bombillas en la fachada y un Food Hall art nouveau. Mirar es gratis.'},
+
+/* ---------------- COMER ---------------- */
+{cat:'comida', n:'Borough Market', lat:51.5055264, lng:-0.090438,
+ hood:'Southwark · junto a London Bridge, SE1 9AL', free:true, price:'£6–10 un plato',
+ ofr:'El mercado de comida más antiguo de Londres, bajo las vías del tren. Puestos de queso, chorizo, curry, paella, ostras y los famosos bocadillos de raclette derretida.',
+ top:'El bocadillo de queso fundido de Kappacasein y el de chorizo de Brindisa. Lo mejor es ir con hambre, dar una vuelta entera antes de decidir y comer de pie. Cierra a media tarde.',
+ url:'https://boroughmarket.org.uk/', img:'London - Borough Market IV.jpg',
+ dato:'El mejor almuerzo barato de Londres: £6–10 de pie, bajo las vías del tren.'},
+
+{cat:'comida', n:'Chinatown (Gerrard Street)', lat:51.5117874, lng:-0.1310953,
+ hood:'Soho · entre Leicester Square y Shaftesbury Avenue', free:true, price:'£10–15 un plato',
+ ofr:'Dos calles de restaurantes chinos, vietnamitas y malayos, panaderías y locales de bubble tea, con los faroles rojos colgados sobre la calle.',
+ top:'El pato asado colgado en los escaparates, que sale por unas £12 con arroz. Los bollos al vapor de las panaderías cuestan £2 y son el desayuno más barato del centro.',
+ url:'https://chinatown.co.uk/', img:'Gerrard Street, Chinatown, London.jpg',
+ dato:'Pato asado por £12 y bollos al vapor por £2. Abierto hasta tarde.'},
+
+{cat:'comida', n:'Beigel Bake', lat:51.5245116, lng:-0.0717527,
+ hood:'159 Brick Lane · E1 6SB', free:true, price:'£3–8',
+ ofr:'Panadería judía de Brick Lane abierta 24 horas desde 1974. Cola constante y un ritmo de servicio que da miedo.',
+ top:'El bagel de salt beef con mostaza y pepinillo, por unas £7. Un bagel simple con queso cuesta menos de £3. Es la comida más barata y más londinense que van a encontrar.',
+ url:'https://beigelbake.co.uk/', img:'Brick Lane, London, February 2023 (3).jpg',
+ dato:'Bagel de salt beef por £7, abierto 24 horas desde 1974. Institución de Brick Lane.'},
+
+{cat:'comida', n:'Dishoom Covent Garden', lat:51.5124271, lng:-0.126856,
+ hood:'12 Upper St Martin’s Lane · WC2H 9FB', free:false, price:'£10–16 un plato',
+ ofr:'Restaurante irani-bombayí inspirado en los cafés de Bombay de los años sesenta, con decoración de época y música. Es de los sitios más queridos de Londres.',
+ top:'El bacon naan roll del desayuno (unas £7) y el black daal, que lleva 24 horas cociéndose. No aceptan reserva para grupos pequeños en la cena: llegar antes de las 18:00 o apuntarse a la lista de espera.',
+ url:'https://www.dishoom.com/covent-garden', img:'',
+ dato:'Comida bombayí en un local precioso. Llega antes de las 18:00 o habrá cola larga.'},
+
+{cat:'comida', n:'Padella', lat:51.505138, lng:-0.0899124,
+ hood:'6 Southwark Street · junto a Borough Market, SE1 1TQ', free:false, price:'£7–14 un plato',
+ ofr:'Pasta fresca hecha a la vista, platos pequeños y precios que no tienen sentido para la calidad. Barra y mesas apretadas.',
+ top:'Los pici cacio e pepe por unas £11. No reservan: te apuntas por la app en cuanto llegas, das una vuelta por el mercado y vuelves cuando te avisan.',
+ url:'https://www.padella.co/', img:'',
+ dato:'Pasta fresca desde £7 al lado de Borough Market. Lista de espera por app.'},
+
+{cat:'comida', n:'Seven Dials Market', lat:51.5140268, lng:-0.1260469,
+ hood:'35 Earlham Street · Covent Garden, WC2H 9LD', free:true, price:'£8–13 un plato',
+ ofr:'Mercado de comida cubierto en un antiguo almacén de plátanos, con una veintena de puestos y mesas comunes. Perfecto para un grupo en el que cada uno quiere otra cosa.',
+ top:'Un piso entero dedicado al queso, y opciones asiáticas, mexicanas y vegetarianas en el mismo sitio. Está a cinco minutos de Covent Garden y del British Museum.',
+ url:'https://www.sevendialsmarket.co.uk/', img:'',
+ dato:'20 puestos y mesas comunes: cada uno come lo que quiera por £8–13.'},
+
+{cat:'comida', n:'Roti King', lat:51.5290041, lng:-0.132048,
+ hood:'Doric Way · junto a Euston, NW1 1LH', free:false, price:'£9–13 un plato',
+ ofr:'Sótano diminuto junto a la estación de Euston donde hacen roti canai malayo a mano delante de ti. Hay cola siempre y merece la pena.',
+ top:'El roti canai con curry de pollo por unas £10, y el murtabak. No reservan y no aceptan grupos grandes. Solo efectivo o tarjeta según el día, pregunten.',
+ url:'https://rotiking.com/', img:'',
+ dato:'Roti canai malayo hecho a mano por £10. Sótano diminuto y cola permanente.'},
+
+{cat:'comida', n:'BAO Soho', lat:51.5132163, lng:-0.1365297,
+ hood:'53 Lexington Street · Soho, W1F 9AS', free:false, price:'£6–9 por bao',
+ ofr:'Barra taiwanesa minúscula con panecillos al vapor rellenos. Se pide de a varios y se comparte.',
+ top:'El bao clásico de cerdo y el frito de pollo, a unas £7 cada uno. Con tres por persona se come bien por menos de £20. No reservan: lista en la puerta.',
+ url:'https://baolondon.com/', img:'',
+ dato:'Baos taiwaneses a £7. Con tres por cabeza se come de sobra.'},
+
+{cat:'comida', n:'Kanada-Ya', lat:51.5154947, lng:-0.1275876,
+ hood:'64 St Giles High Street · WC2H 8LE', free:false, price:'£13–16 un bol',
+ ofr:'Ramen tonkotsu con caldo cocido dieciocho horas, de los mejores de Londres. Local pequeño, servicio rápido.',
+ top:'El tonkotsu original con huevo marinado. Está justo enfrente de la estación de Tottenham Court Road y a cinco minutos del British Museum, así que encaja perfecto después de una mañana de museo.',
+ url:'https://www.kanada-ya.com/', img:'',
+ dato:'De los mejores ramen de Londres, a 5 min del British Museum. £13–16.'},
+
+{cat:'comida', n:'Flat Iron', lat:51.5108067, lng:-0.1239891,
+ hood:'17–18 Henrietta Street · Covent Garden, WC2E 8QH', free:false, price:'~£15 el filete',
+ ofr:'Un solo plato en la carta: un filete de flat iron con ensalada, por un precio fijo que ronda las £15. Es la forma más barata de comer carne decente en el centro.',
+ top:'Te regalan un cucurucho de helado de sal al final. No reservan: te apuntas y te avisan al móvil mientras esperas en el bar de abajo.',
+ url:'https://flatironsteak.co.uk/', img:'',
+ dato:'Un filete por ~£15 y helado de regalo. La carne más barata del centro.'},
+
+{cat:'comida', n:'Mercato Metropolitano', lat:51.4984913, lng:-0.0986582,
+ hood:'42 Newington Causeway · Elephant & Castle, SE1 6DR', free:true, price:'£8–14 un plato',
+ ofr:'Mercado de comida italiana y del mundo en una antigua fábrica de papel, con cervecería propia, mesas largas y ambiente de nave industrial.',
+ top:'La pizza napolitana y la cerveza artesanal de la casa. Es grande, ruidoso y perfecto para un grupo que quiere cenar sin reservar. Abierto hasta tarde.',
+ url:'https://mercatometropolitano.com/', img:'',
+ dato:'Nave industrial llena de puestos italianos. Ideal para grupos, sin reserva.'},
+
+{cat:'comida', n:'Franco Manca', lat:51.5001446, lng:-0.0817032,
+ hood:'Cadena · hay locales por todo el centro', free:false, price:'£8–12 la pizza',
+ ofr:'Pizza napolitana de masa madre a precio de cadena, con hornos de leña y una carta corta. Hay sucursales cerca de casi todos los museos de esta lista.',
+ top:'La pizza número 4 con chorizo por unas £10. Es la red de seguridad para cuando el grupo no se pone de acuerdo y hay hambre.',
+ url:'https://www.francomanca.co.uk/', img:'',
+ dato:'Pizza napolitana de masa madre por £8–12. Hay una cerca de casi cualquier museo.'},
+
+/* ---------------- EVENTOS (pines del mapa) ---------------- */
+{cat:'evento', n:'Hyde Park Winter Wonderland', lat:51.5053, lng:-0.1585,
+ hood:'Hyde Park · entrada principal por Hyde Park Corner', free:false, price:'£1 – £8,25',
+ ofr:'Mercado navideño, atracciones, circo y el Magical Ice Kingdom, del 19 de noviembre al 3 de enero.',
+ top:'Del 14 al 18 de diciembre abre de 11:00 a 22:00. Entrada desde £1 en franja valle; las atracciones se pagan aparte.',
+ url:'https://hydeparkwinterwonderland.com/tickets-guide/', img:'Hyde Park Winter Wonderland 11.jpg',
+ dato:'14–18 dic, 11:00–22:00. Entrada desde £1 reservando franja valle.'},
+
+{cat:'evento', n:'Skate at Somerset House', lat:51.5110, lng:-0.1173,
+ hood:'Strand · patio de Somerset House, WC2R 1LA', free:false, price:'Entrar gratis · patinar £11–28,50',
+ ofr:'Pista de hielo en el patio del palacio, del 11 de noviembre al 10 de enero, con árbol gigante y DJs en las sesiones nocturnas.',
+ top:'Entrar al recinto no cuesta nada: se puede ir solo a ver el árbol y tomar algo. Y el Courtauld está en el mismo edificio.',
+ url:'https://www.somersethouse.org.uk/press/skate-at-somerset-house-with-virgin-holidays-returns-for-an-unforgettable-festive-season',
+ img:'The courtyard of Somerset House, Strand, London - geograph.org.uk - 1601172.jpg',
+ dato:'Pista de hielo en el patio. Entrar es gratis; patinar, desde £11.'},
+
+{cat:'evento', n:'Southbank Centre Winter Market', lat:51.5057791, lng:-0.116787,
+ hood:'South Bank · Queen’s Walk, junto al Támesis', free:true, price:'Gratis',
+ ofr:'Casetas de madera a lo largo del río, con artesanía, vino caliente y comida callejera, hasta principios de enero.',
+ top:'Pasear de noche entre Jubilee Gardens y el puente de Waterloo, con el Parlamento iluminado enfrente. No cuesta nada.',
+ url:'https://www.southbankcentre.co.uk/', img:'The Southbank Centre.jpg',
+ dato:'Mercado navideño gratis junto al río, con el Parlamento iluminado enfrente.'},
+
+{cat:'evento', n:'Royal Albert Hall', lat:51.501007, lng:-0.1774058,
+ hood:'South Kensington · Kensington Gore, SW7 2AP', free:false, price:'Según concierto',
+ ofr:'Programa de Navidad todas las noches. En las fechas del viaje: John Wilson (15 dic), London Community Gospel Choir (16 dic) y Trevor Nelson’s Soul Christmas (17 y 18 dic).',
+ top:'Las localidades altas de la galería son las más baratas del recinto. Está a diez minutos andando del V&A y del Science Museum.',
+ url:'https://www.royalalberthall.com/tickets/series/christmas-at-the-royal-albert-hall/',
+ img:'Royal Albert Hall, London - Nov 2012.jpg',
+ dato:'Gospel el 16, John Wilson el 15 y Soul Christmas el 17 y 18 de diciembre.'},
+
+{cat:'evento', n:'London Coliseum · El Cascanueces', lat:51.5100038, lng:-0.1262319,
+ hood:'St Martin’s Lane · WC2N 4ES', free:false, price:'Según localidad',
+ ofr:'El Cascanueces del English National Ballet, con orquesta en directo. Estrena el 17 de diciembre de 2026 y sigue hasta el 10 de enero.',
+ top:'Funciones de tarde (14:30) y de noche (19:30). Las entradas altas del Coliseum son de las más baratas del West End.',
+ url:'https://londoncoliseum.org/events/nutcracker-2026/', img:'London Coliseum 2018-09-23.jpg',
+ dato:'El Cascanueces del ENB estrena el 17 de diciembre. Orquesta en directo.'},
+
+{cat:'evento', n:'The Old Vic · A Christmas Carol', lat:51.5020248, lng:-0.1092736,
+ hood:'Waterloo · 103 The Cut, SE1 8NB', free:false, price:'Desde ~£43 en diciembre',
+ ofr:'La versión de Matthew Warchus, novena temporada seguida, del 12 de noviembre al 9 de enero.',
+ top:'Funciones a las 14:00 y a las 19:00. Está a diez minutos andando del Imperial War Museum y de Waterloo.',
+ url:'https://www.oldvictheatre.com/stage/a-christmas-carol-2026/', img:'',
+ dato:'El Cuento de Navidad más famoso de Londres, a 10 min del Imperial War Museum.'},
+
+{cat:'evento', n:'Christmas at Kew', lat:51.4783406, lng:-0.2968981,
+ hood:'Kew · Royal Botanic Gardens, zona 3', free:false, price:'Desde ~£25',
+ ofr:'Recorrido de luces de más de dos kilómetros por los jardines botánicos, del 13 de noviembre al 3 de enero, con entrada por franjas desde las 16:20.',
+ top:'El Palm House iluminado reflejándose en el lago. Se agota semanas antes en diciembre, así que hay que comprar con mucha antelación.',
+ url:'https://www.kew.org/kew-gardens/whats-on/christmas', img:'Kew Gardens Palm House, London - July 2009.jpg',
+ dato:'2 km de luces por los jardines botánicos. Se agota: comprar con semanas de antelación.'},
+];
+
+/* ============================================================
+   Render
+   ============================================================ */
+const CAT = {
+  museo:     {label:'Museo',      color:'#e8b44a', icon:'\u{1F3DB}'},
+  monumento: {label:'Monumento',  color:'#e2725b', icon:'\u{1F5FF}'},
+  tienda:    {label:'Tienda',     color:'#a98bd6', icon:'\u{1F6CD}'},
+  comida:    {label:'Comer',      color:'#57c4a0', icon:'\u{1F374}'},
+  evento:    {label:'Evento',     color:'#6fa8dc', icon:'\u{2728}'}
+};
+
+const imgURL = f => 'https://commons.wikimedia.org/wiki/Special:FilePath/' +
+                    encodeURIComponent(f) + '?width=760';
+
+function photo(p){
+  if(!p.img){
+    return '<div class="ph" style="display:grid;place-items:center;background:linear-gradient(135deg,#232b3a,#161c27)">' +
+           '<span style="font-size:2.6rem;opacity:.5">'+CAT[p.cat].icon+'</span>' +
+           '<span class="tag">'+CAT[p.cat].label+'</span>' +
+           '<span class="price '+(p.free?'free':'paid')+'">'+(p.price||'')+'</span></div>';
+  }
+  return '<div class="ph"><img src="'+imgURL(p.img)+'" alt="Foto real de '+p.n+'" loading="lazy" ' +
+         'onerror="this.style.display=\'none\'">' +
+         '<span class="tag">'+CAT[p.cat].label+'</span>' +
+         '<span class="price '+(p.free?'free':'paid')+'">'+(p.price||'')+'</span></div>';
+}
+
+function row(ic, txt){ return '<div class="row"><span class="ic">'+ic+'</span><span>'+txt+'</span></div>'; }
+
+function card(p, i){
+  let h = '<article class="card" id="c'+i+'">' + photo(p) + '<div class="in">';
+  h += '<h3>'+p.n+'</h3>';
+  h += '<p class="hood">\u{1F4CD} '+p.hood+'</p>';
+  if(p.hor)  h += row('\u{1F552}', p.hor);
+  if(p.ofr)  h += row('\u{1F4DA}', p.ofr);
+  if(p.top)  h += '<div class="star"><b>No te lo pierdas:</b> '+p.top+'</div>';
+  if(p.stud) h += '<div class="stud"><b>Estudiantes:</b> '+p.stud+'</div>';
+  if(p.tix)  h += row('\u{1F3AB}', '<b>Boletos:</b> '+p.tix);
+  h += '<div class="links">';
+  h += '<a class="btn p" href="'+p.url+'" target="_blank" rel="noopener">Web oficial ↗</a>';
+  h += '<a class="btn" href="#mapa" onclick="showOn('+i+')">Ver en el mapa</a>';
+  h += '</div></div></article>';
+  return h;
+}
+
+['museo','monumento','tienda','comida'].forEach(c=>{
+  const el = document.getElementById('g-'+c);
+  if(el) el.innerHTML = P.map((p,i)=>[p,i]).filter(x=>x[0].cat===c)
+                         .map(x=>card(x[0],x[1])).join('');
+});
+
+/* ---------- tabla resumen (solo museos) ---------- */
+document.getElementById('tbody').innerHTML = P
+  .filter(p=>p.cat==='museo')
+  .sort((a,b)=> (a.free===b.free ? a.n.localeCompare(b.n,'es') : (a.free?-1:1)))
+  .map(p=>{
+    const est = p.stud ? p.stud.replace(/<[^>]+>/g,'') : '—';
+    const estShort = est.length>110 ? est.slice(0,108)+'…' : est;
+    return '<tr>'+
+      '<td class="n">'+p.n+'</td>'+
+      '<td>'+p.hood.split('·')[0].trim()+'</td>'+
+      '<td class="'+(p.free?'yes':'')+'">'+p.price+'</td>'+
+      '<td>'+estShort+'</td>'+
+      '<td>'+(p.hor||'—').replace(/<[^>]+>/g,'')+'</td>'+
+      '<td><a href="'+p.url+'" target="_blank" rel="noopener">abrir ↗</a></td>'+
+    '</tr>';
+  }).join('');
+
+/* ============================================================
+   Mapa (Leaflet + OpenStreetMap)
+   ============================================================ */
+const map = L.map('map', {scrollWheelZoom:false}).setView([51.5085, -0.1180], 12);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+const markers = [];
+const groups = {};
+
+P.forEach((p,i)=>{
+  const c = CAT[p.cat];
+  const icon = L.divIcon({
+    className:'', iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24],
+    html:'<div class="pin" style="background:'+c.color+'"><span>'+c.icon+'</span></div>'
+  });
+  const m = L.marker([p.lat, p.lng], {icon}).bindPopup(
+    '<b>'+p.n+'</b><br>'+
+    '<span style="color:#9aa6b8">'+p.hood+'</span><br><br>'+
+    (p.dato||'')+'<br><br>'+
+    '<span style="color:'+(p.free?'#57c4a0':'#e8b44a')+';font-weight:600">'+(p.price||'')+'</span><br>'+
+    '<a href="'+p.url+'" target="_blank" rel="noopener">Web oficial ↗</a>'
+  );
+  m._cat = p.cat; m._i = i;
+  markers.push(m);
+  (groups[p.cat] = groups[p.cat] || []).push(m);
+  m.addTo(map);
+});
+
+const all = L.featureGroup(markers);
+map.fitBounds(all.getBounds().pad(0.06));
+
+/* ---------- filtros ---------- */
+let activo = 'todo';
+const fbox = document.getElementById('filters');
+const PLURAL = {museo:'Museos', monumento:'Monumentos', tienda:'Tiendas', comida:'Comida', evento:'Eventos'};
+const cats = [['todo','Todo', '#e8ecf3']].concat(
+  Object.keys(CAT).map(k=>[k, PLURAL[k], CAT[k].color]));
+
+fbox.innerHTML = cats.map(([k,lab])=>{
+  const n = k==='todo' ? P.length : P.filter(p=>p.cat===k).length;
+  return '<button data-c="'+k+'"'+(k==='todo'?' class="on"':'')+'>'+lab+' <span style="opacity:.6">'+n+'</span></button>';
+}).join('');
+
+fbox.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  activo = b.dataset.c;
+  [...fbox.children].forEach(x=>x.classList.toggle('on', x===b));
+  markers.forEach(m=>{
+    const on = (activo==='todo' || m._cat===activo);
+    if(on && !map.hasLayer(m)) m.addTo(map);
+    if(!on && map.hasLayer(m)) map.removeLayer(m);
+  });
+  const vis = markers.filter(m=>activo==='todo'||m._cat===activo);
+  if(vis.length) map.fitBounds(L.featureGroup(vis).getBounds().pad(0.08));
+});
+
+/* ---------- "ver en el mapa" desde una ficha ---------- */
+function showOn(i){
+  const m = markers.find(x=>x._i===i);
+  if(!m) return;
+  if(!map.hasLayer(m)) m.addTo(map);
+  map.setView(m.getLatLng(), 16, {animate:true});
+  setTimeout(()=>m.openPopup(), 350);
+}
+window.showOn = showOn;
+
+/* Leaflet necesita un recalculo si el mapa se pinta antes de tener tamaño */
+setTimeout(()=>map.invalidateSize(), 300);
+
+/* ---------- acordeón exclusivo (fallback si el navegador no soporta name=) ---------- */
+const accs = document.querySelectorAll('details.acc');
+if(!('name' in document.createElement('details'))){
+  accs.forEach(d=>d.addEventListener('toggle', ()=>{
+    if(d.open) accs.forEach(o=>{ if(o!==d) o.open = false; });
+  }));
+}
+</script>
+</body>
+</html>
